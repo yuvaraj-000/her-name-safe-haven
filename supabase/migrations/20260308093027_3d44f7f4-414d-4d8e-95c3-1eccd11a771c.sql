@@ -1,0 +1,1 @@
+ALTER TABLE public.incidents DROP CONSTRAINT IF EXISTS incidents_status_check;
