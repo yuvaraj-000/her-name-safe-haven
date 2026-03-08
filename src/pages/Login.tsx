@@ -56,9 +56,9 @@ const Login = () => {
             <Shield className="h-8 w-8 text-primary" />
           </div>
           <h1 className="font-display text-3xl font-bold text-secondary-foreground">
-            Her<span className="text-gradient-primary">Name</span>
+            Her<span className="text-gradient-primary">Net</span>
           </h1>
-          <p className="mt-2 text-sm text-secondary-foreground/60">Your safety, your power</p>
+          <p className="mt-2 text-sm text-secondary-foreground/60">AI Powered Women Safety Network</p>
         </motion.div>
       </div>
 
