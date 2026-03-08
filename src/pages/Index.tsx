@@ -45,7 +45,7 @@ const Index = () => {
 
           {/* SOS Button */}
           <button
-            onClick={() => navigate("/sos")}
+            onClick={startCountdown}
             className="relative z-10 flex h-48 w-48 flex-col items-center justify-center rounded-full bg-primary text-primary-foreground shadow-neon transition-transform hover:scale-105 active:scale-95 animate-sos-pulse"
           >
             <Shield className="h-14 w-14 mb-2 drop-shadow-[0_0_8px_hsl(var(--primary-foreground)/0.5)]" />
