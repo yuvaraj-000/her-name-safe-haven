@@ -29,18 +29,25 @@ export const SOSProvider = ({ children }: { children: ReactNode }) => {
   const sos = useSOSEmergency();
   const { startAlarm, stopAlarm } = useSOSAlarm();
 
-  // Start/stop alarm based on SOS active state
+  // Expose startAlarm so it can be called immediately
+  const originalStartCountdown = sos.startCountdown;
+  const wrappedStartCountdown = () => {
+    if (!sos.active) {
+      startAlarm(); // Ring immediately, don't wait for async
+    }
+    originalStartCountdown();
+  };
+
+  // Stop alarm when SOS is cancelled
   useEffect(() => {
-    if (sos.active) {
-      startAlarm();
-    } else {
+    if (!sos.active) {
       stopAlarm();
     }
     return () => stopAlarm();
   }, [sos.active]);
 
   return (
-    <SOSContext.Provider value={sos}>
+    <SOSContext.Provider value={{ ...sos, startCountdown: wrappedStartCountdown }}>
       {children}
     </SOSContext.Provider>
   );
