@@ -126,7 +126,7 @@ const AuthoritySOSAlerts = () => {
                     size="sm"
                     variant="outline"
                     className="flex-1 h-8 text-xs border-primary/30 text-primary hover:bg-primary/10"
-                    onClick={() => window.open(`https://www.google.com/maps?q=${alert.latitude},${alert.longitude}`, "_blank")}
+                    onClick={() => setMapAlert({ lat: alert.latitude, lng: alert.longitude, userId: alert.user_id })}
                   >
                     <Navigation className="h-3 w-3 mr-1" /> Open Location
                   </Button>
