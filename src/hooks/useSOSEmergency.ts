@@ -118,7 +118,7 @@ export function useSOSEmergency() {
 
       recorder.start(1000);
       mediaRecorderRef.current = recorder;
-      setState((s) => ({ ...s, isRecording: true }));
+      setState((s) => ({ ...s, isRecording: true, videoStream: stream }));
     } catch (err) {
       console.warn("Video recording not available, falling back to audio:", err);
       // Fallback to audio-only
