@@ -68,11 +68,11 @@ const SOS = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="mt-6 w-full max-w-sm px-6"
+        className="mt-6 w-full max-w-sm px-6 pb-28 relative z-10"
       >
         <button
           onClick={() => navigate("/report")}
-          className="w-full rounded-xl border border-primary/30 bg-primary/10 p-4 flex items-center gap-4 transition-all hover:bg-primary/20 hover:border-primary/50 active:scale-[0.98] neon-border"
+          className="w-full rounded-xl border border-primary/30 bg-primary/10 p-4 flex items-center gap-4 transition-all hover:bg-primary/20 hover:border-primary/50 active:scale-[0.98] neon-border cursor-pointer"
         >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/20">
             <FileText className="h-5 w-5 text-primary" />
