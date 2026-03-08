@@ -38,6 +38,7 @@ const App = () => (
           <SOSProvider>
             <AuthorityProvider>
             <SOSActiveBanner />
+            <SOSCameraPreview />
               <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/authority" element={<AuthorityLogin />} />
