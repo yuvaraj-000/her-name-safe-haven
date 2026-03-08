@@ -169,6 +169,59 @@ const AuthoritySOSAlerts = () => {
           <p className="mt-2 text-sm text-muted-foreground">No SOS alerts recorded</p>
         </div>
       )}
+
+      {/* In-app Location Map Modal */}
+      <AnimatePresence>
+        {mapAlert && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setMapAlert(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-lg rounded-xl border border-primary/30 bg-card overflow-hidden neon-border"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-3 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <Navigation className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-bold text-foreground">Victim Location</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {mapAlert.lat.toFixed(4)}, {mapAlert.lng.toFixed(4)}
+                  </span>
+                </div>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMapAlert(null)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="h-[350px]">
+                <MapContainer
+                  center={[mapAlert.lat, mapAlert.lng]}
+                  zoom={16}
+                  style={{ height: "100%", width: "100%" }}
+                  zoomControl={false}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={[mapAlert.lat, mapAlert.lng]} icon={sosIcon}>
+                    <Popup>
+                      <strong className="text-red-600">🚨 SOS Location</strong><br />
+                      User: {mapAlert.userId.slice(0, 8)}...
+                    </Popup>
+                  </Marker>
+                </MapContainer>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
