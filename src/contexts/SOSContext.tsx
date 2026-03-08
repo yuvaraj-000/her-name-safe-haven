@@ -12,6 +12,7 @@ interface SOSContextType {
   elapsedSeconds: number;
   latitude: number | null;
   longitude: number | null;
+  videoStream: MediaStream | null;
   startCountdown: () => void;
   cancelCountdown: () => void;
   cancelSOS: () => void;
@@ -29,16 +30,14 @@ export const SOSProvider = ({ children }: { children: ReactNode }) => {
   const sos = useSOSEmergency();
   const { startAlarm, stopAlarm } = useSOSAlarm();
 
-  // Expose startAlarm so it can be called immediately
   const originalStartCountdown = sos.startCountdown;
   const wrappedStartCountdown = () => {
     if (!sos.active) {
-      startAlarm(); // Ring immediately, don't wait for async
+      startAlarm();
     }
     originalStartCountdown();
   };
 
-  // Stop alarm when SOS is cancelled
   useEffect(() => {
     if (!sos.active) {
       stopAlarm();

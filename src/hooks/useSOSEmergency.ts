@@ -16,6 +16,7 @@ interface SOSState {
   elapsedSeconds: number;
   latitude: number | null;
   longitude: number | null;
+  videoStream: MediaStream | null;
 }
 
 export function useSOSEmergency() {
@@ -32,6 +33,7 @@ export function useSOSEmergency() {
     elapsedSeconds: 0,
     latitude: null,
     longitude: null,
+    videoStream: null,
   });
 
   const locationWatchRef = useRef<number | null>(null);
@@ -96,6 +98,7 @@ export function useSOSEmergency() {
 
       recorder.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
+        setState((s) => ({ ...s, videoStream: null }));
         if (chunksRef.current.length > 0 && user && state.alertId) {
           const blob = new Blob(chunksRef.current, { type: "video/webm" });
           const fileName = `sos-video-${Date.now()}.webm`;
@@ -115,7 +118,7 @@ export function useSOSEmergency() {
 
       recorder.start(1000);
       mediaRecorderRef.current = recorder;
-      setState((s) => ({ ...s, isRecording: true }));
+      setState((s) => ({ ...s, isRecording: true, videoStream: stream }));
     } catch (err) {
       console.warn("Video recording not available, falling back to audio:", err);
       // Fallback to audio-only
@@ -330,6 +333,7 @@ export function useSOSEmergency() {
       elapsedSeconds: 0,
       latitude: null,
       longitude: null,
+      videoStream: null,
     });
 
     toast({ title: "SOS Cancelled", description: "Emergency alert deactivated." });
