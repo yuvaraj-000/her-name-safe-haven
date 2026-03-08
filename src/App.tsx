@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AuthorityProvider } from "@/contexts/AuthorityContext";
+import { SOSProvider } from "@/contexts/SOSContext";
+import SOSActiveBanner from "@/components/SOSActiveBanner";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ProtectedAuthorityRoute from "@/components/authority/ProtectedAuthorityRoute";
 import Index from "./pages/Index";
@@ -32,8 +34,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <AuthorityProvider>
-            <Routes>
+          <SOSProvider>
+            <SOSActiveBanner />
+            <AuthorityProvider>
+              <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/authority" element={<AuthorityLogin />} />
               <Route path="/authority/dashboard" element={<ProtectedAuthorityRoute><AuthorityDashboard /></ProtectedAuthorityRoute>} />
@@ -49,8 +53,9 @@ const App = () => (
               <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthorityProvider>
+              </Routes>
+            </AuthorityProvider>
+          </SOSProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
