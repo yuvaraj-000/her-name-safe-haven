@@ -43,6 +43,9 @@ export function useSOSEmergency() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const alertIdRef = useRef<string | null>(null);
+  const userRef = useRef(user);
+  userRef.current = user;
 
   // Cleanup on unmount
   useEffect(() => {
@@ -99,14 +102,16 @@ export function useSOSEmergency() {
       recorder.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
         setState((s) => ({ ...s, videoStream: null }));
-        if (chunksRef.current.length > 0 && user && state.alertId) {
+        const currentUser = userRef.current;
+        const currentAlertId = alertIdRef.current;
+        if (chunksRef.current.length > 0 && currentUser) {
           const blob = new Blob(chunksRef.current, { type: "video/webm" });
           const fileName = `sos-video-${Date.now()}.webm`;
-          const filePath = `${user.id}/${fileName}`;
+          const filePath = `${currentUser.id}/${fileName}`;
 
           await supabase.storage.from("evidence").upload(filePath, blob);
           await supabase.from("evidence").insert({
-            user_id: user.id,
+            user_id: currentUser.id,
             file_name: fileName,
             file_path: filePath,
             file_type: "video/webm",
@@ -129,13 +134,14 @@ export function useSOSEmergency() {
         recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
         recorder.onstop = async () => {
           audioStream.getTracks().forEach((t) => t.stop());
-          if (chunksRef.current.length > 0 && user && state.alertId) {
+          const currentUser = userRef.current;
+          if (chunksRef.current.length > 0 && currentUser) {
             const blob = new Blob(chunksRef.current, { type: "audio/webm" });
             const fileName = `sos-audio-${Date.now()}.webm`;
-            const filePath = `${user.id}/${fileName}`;
+            const filePath = `${currentUser.id}/${fileName}`;
             await supabase.storage.from("evidence").upload(filePath, blob);
             await supabase.from("evidence").insert({
-              user_id: user.id, file_name: fileName, file_path: filePath,
+              user_id: currentUser.id, file_name: fileName, file_path: filePath,
               file_type: "audio/webm", file_size: blob.size, source: "sos_recording",
             });
           }
@@ -280,7 +286,7 @@ export function useSOSEmergency() {
     if (!data) return;
 
     const alertId = data.id;
-
+    alertIdRef.current = alertId;
     setState((s) => ({
       ...s,
       active: true,
@@ -311,17 +317,49 @@ export function useSOSEmergency() {
   };
 
   const cancelSOS = async () => {
-    stopAllProcesses();
+    // Stop recorder first (onstop will use alertIdRef to save video)
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null;
+    }
 
-    if (state.alertId && user) {
+    // Small delay to let onstop fire and capture refs
+    await new Promise((r) => setTimeout(r, 200));
+
+    // Now stop other processes
+    if (locationWatchRef.current !== null) {
+      navigator.geolocation.clearWatch(locationWatchRef.current);
+      locationWatchRef.current = null;
+    }
+    if (escalationTimerRef.current) {
+      clearTimeout(escalationTimerRef.current);
+      escalationTimerRef.current = null;
+    }
+    if (locationUpdateRef.current) {
+      clearInterval(locationUpdateRef.current);
+      locationUpdateRef.current = null;
+    }
+    if (elapsedRef.current) {
+      clearInterval(elapsedRef.current);
+      elapsedRef.current = null;
+    }
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+      countdownRef.current = null;
+    }
+
+    const currentAlertId = alertIdRef.current;
+    if (currentAlertId && user) {
       await supabase
         .from("sos_alerts")
         .update({
           status: "cancelled",
           resolved_at: new Date().toISOString(),
         })
-        .eq("id", state.alertId);
+        .eq("id", currentAlertId);
     }
+
+    alertIdRef.current = null;
 
     setState({
       active: false,
