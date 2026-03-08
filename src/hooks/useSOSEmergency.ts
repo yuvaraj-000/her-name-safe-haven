@@ -102,14 +102,16 @@ export function useSOSEmergency() {
       recorder.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
         setState((s) => ({ ...s, videoStream: null }));
-        if (chunksRef.current.length > 0 && user && state.alertId) {
+        const currentUser = userRef.current;
+        const currentAlertId = alertIdRef.current;
+        if (chunksRef.current.length > 0 && currentUser) {
           const blob = new Blob(chunksRef.current, { type: "video/webm" });
           const fileName = `sos-video-${Date.now()}.webm`;
-          const filePath = `${user.id}/${fileName}`;
+          const filePath = `${currentUser.id}/${fileName}`;
 
           await supabase.storage.from("evidence").upload(filePath, blob);
           await supabase.from("evidence").insert({
-            user_id: user.id,
+            user_id: currentUser.id,
             file_name: fileName,
             file_path: filePath,
             file_type: "video/webm",
