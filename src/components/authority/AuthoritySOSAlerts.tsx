@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShieldAlert, MapPin, Clock, User, AlertTriangle, CheckCircle } from "lucide-react";
+import { ShieldAlert, MapPin, Clock, User, AlertTriangle, CheckCircle, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -107,14 +107,26 @@ const AuthoritySOSAlerts = () => {
                   Escalated to Police
                 </div>
               )}
-              <Button
-                size="sm"
-                variant="outline"
-                className="mt-3 w-full h-8 text-xs border-safe/30 text-safe hover:bg-safe/10"
-                onClick={() => resolveAlert(alert.id)}
-              >
-                <CheckCircle className="h-3 w-3 mr-1" /> Mark as Resolved
-              </Button>
+              <div className="mt-3 flex gap-2">
+                {alert.latitude && alert.longitude && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 h-8 text-xs border-primary/30 text-primary hover:bg-primary/10"
+                    onClick={() => window.open(`https://www.google.com/maps?q=${alert.latitude},${alert.longitude}`, "_blank")}
+                  >
+                    <Navigation className="h-3 w-3 mr-1" /> Open Location
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 h-8 text-xs border-safe/30 text-safe hover:bg-safe/10"
+                  onClick={() => resolveAlert(alert.id)}
+                >
+                  <CheckCircle className="h-3 w-3 mr-1" /> Mark as Resolved
+                </Button>
+              </div>
             </motion.div>
           ))}
         </div>
