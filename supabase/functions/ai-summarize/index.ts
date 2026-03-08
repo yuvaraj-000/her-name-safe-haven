@@ -22,19 +22,42 @@ serve(async (req) => {
 Title: ${incident.title}
 Description: ${incident.description}
 Location: ${incident.location || "Not specified"}
+GPS Coordinates: ${incident.latitude && incident.longitude ? `${incident.latitude}, ${incident.longitude}` : "Not captured"}
 Date: ${incident.incident_date || "Not specified"}
 Threat Level: ${incident.threat_level || "medium"}
 Anonymous: ${incident.is_anonymous ? "Yes" : "No"}
-Status: ${incident.status}`;
+Status: ${incident.status}
+Verification: ${incident.verification_status || "pending"}`;
     } else if (type === "verify") {
-      systemPrompt = `You are an AI complaint verification system. Analyze the complaint for authenticity indicators. Check for: consistency of details, specificity of description, presence of verifiable information (location, dates, names), emotional language patterns. Rate credibility as: VERIFIED, NEEDS_REVIEW, or SUSPICIOUS. Provide brief reasoning. Be objective.`;
+      systemPrompt = `You are an AI complaint verification system for a women's safety platform. Your job is to analyze complaints for authenticity and flag potential false reports.
+
+ANALYSIS CRITERIA:
+1. DESCRIPTION CONSISTENCY: Is the description specific and internally consistent? Does it contain verifiable details (names, places, times)?
+2. LOCATION DATA: Is GPS location provided? Does the text location match GPS coordinates contextually?
+3. TIMESTAMP VALIDITY: Is the incident date reasonable (not future-dated, not unrealistically old)?
+4. EVIDENCE PRESENCE: Are photos/videos/audio attached? Evidence presence increases credibility.
+5. LANGUAGE ANALYSIS: Does the language indicate genuine distress vs fabrication? Look for emotional authenticity, specific sensory details, and coherent narrative.
+6. METADATA CHECK: Check for conflicting information — e.g., claims of night incident but daytime evidence.
+
+OUTPUT FORMAT (follow exactly):
+STATUS: [VERIFIED | NEEDS_REVIEW | SUSPICIOUS]
+CONFIDENCE: [HIGH | MEDIUM | LOW]
+REASONING:
+- [Point 1]
+- [Point 2]
+- [Point 3]
+RECOMMENDATION: [Forward to police | Manual review required | Flag as suspicious]`;
+
       userPrompt = `Verify the authenticity of this complaint:
 Title: ${incident.title}
 Description: ${incident.description}
-Location: ${incident.location || "Not provided"}
-Date: ${incident.incident_date || "Not provided"}
+Location (text): ${incident.location || "Not provided"}
+GPS Coordinates: ${incident.latitude && incident.longitude ? `${incident.latitude}, ${incident.longitude}` : "Not captured"}
+Date of Incident: ${incident.incident_date || "Not provided"}
+Report Filed: ${incident.created_at || "Now"}
 Anonymous: ${incident.is_anonymous ? "Yes" : "No"}
-Has evidence attached: ${incident.has_evidence ? "Yes" : "No"}`;
+Has evidence attached: ${incident.has_evidence ? "Yes" : "No"}
+Threat Level (self-reported): ${incident.threat_level || "medium"}`;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
