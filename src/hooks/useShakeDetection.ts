@@ -1,23 +1,30 @@
 import { useEffect, useRef, useCallback } from "react";
 
 interface ShakeOptions {
-  threshold?: number;       // Acceleration threshold to count as a shake
-  shakeCount?: number;      // Number of shakes needed to trigger
-  timeWindow?: number;      // Time window (ms) to complete all shakes
-  cooldown?: number;        // Cooldown (ms) after triggering before it can trigger again
+  threshold?: number;
+  shakeCount?: number;
+  timeWindow?: number;
+  cooldown?: number;
   onShake: () => void;
 }
 
 export function useShakeDetection({
-  threshold = 25,
+  threshold = 20,
   shakeCount = 3,
-  timeWindow = 1500,
+  timeWindow = 2000,
   cooldown = 3000,
   onShake,
 }: ShakeOptions) {
   const shakesRef = useRef<number[]>([]);
   const lastTriggerRef = useRef(0);
   const lastAccelRef = useRef({ x: 0, y: 0, z: 0 });
+  const timeWindowRef = useRef(timeWindow);
+  const thresholdRef = useRef(threshold);
+  const onShakeRef = useRef(onShake);
+
+  useEffect(() => { timeWindowRef.current = timeWindow; }, [timeWindow]);
+  useEffect(() => { thresholdRef.current = threshold; }, [threshold]);
+  useEffect(() => { onShakeRef.current = onShake; }, [onShake]);
 
   const handleMotion = useCallback(
     (event: DeviceMotionEvent) => {
@@ -25,43 +32,36 @@ export function useShakeDetection({
       if (!acc || acc.x === null || acc.y === null || acc.z === null) return;
 
       const last = lastAccelRef.current;
-      const deltaX = Math.abs(acc.x - last.x);
-      const deltaY = Math.abs(acc.y - last.y);
-      const deltaZ = Math.abs(acc.z - last.z);
-      const totalDelta = deltaX + deltaY + deltaZ;
+      const accelChange =
+        Math.abs(acc.x! - last.x) +
+        Math.abs(acc.y! - last.y) +
+        Math.abs(acc.z! - last.z);
 
-      lastAccelRef.current = { x: acc.x, y: acc.y, z: acc.z };
+      lastAccelRef.current = { x: acc.x!, y: acc.y!, z: acc.z! };
 
-      if (totalDelta > threshold) {
+      if (accelChange > thresholdRef.current) {
         const now = Date.now();
 
-        // Cooldown check
         if (now - lastTriggerRef.current < cooldown) return;
 
-        // Add this shake timestamp
         shakesRef.current.push(now);
-
-        // Remove old shakes outside the time window
         shakesRef.current = shakesRef.current.filter(
-          (t) => now - t < timeWindow
+          (t) => now - t < timeWindowRef.current
         );
 
         if (shakesRef.current.length >= shakeCount) {
           shakesRef.current = [];
           lastTriggerRef.current = now;
-          onShake();
+          onShakeRef.current();
         }
       }
     },
-    [threshold, shakeCount, timeWindow, cooldown, onShake]
+    [shakeCount, cooldown]
   );
 
   useEffect(() => {
-    // Request permission on iOS 13+
     const requestAndListen = async () => {
-      if (
-        typeof (DeviceMotionEvent as any).requestPermission === "function"
-      ) {
+      if (typeof (DeviceMotionEvent as any).requestPermission === "function") {
         try {
           const permission = await (DeviceMotionEvent as any).requestPermission();
           if (permission !== "granted") return;
@@ -73,7 +73,6 @@ export function useShakeDetection({
     };
 
     requestAndListen();
-
     return () => {
       window.removeEventListener("devicemotion", handleMotion);
     };
