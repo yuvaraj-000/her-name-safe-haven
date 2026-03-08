@@ -13,7 +13,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import AuthorityLogin from "./pages/AuthorityLogin";
 import AuthorityDashboard from "./pages/authority/AuthorityDashboard";
-import SOS from "./pages/SOS";
+
 import Report from "./pages/Report";
 import Contacts from "./pages/Contacts";
 import EvidenceVault from "./pages/EvidenceVault";
