@@ -333,6 +333,7 @@ export function useSOSEmergency() {
       elapsedSeconds: 0,
       latitude: null,
       longitude: null,
+      videoStream: null,
     });
 
     toast({ title: "SOS Cancelled", description: "Emergency alert deactivated." });
