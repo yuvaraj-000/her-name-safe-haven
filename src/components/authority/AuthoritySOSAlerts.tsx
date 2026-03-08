@@ -1,28 +1,24 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldAlert, MapPin, Clock, User, AlertTriangle, CheckCircle, Navigation, X } from "lucide-react";
+import { ShieldAlert, MapPin, Clock, User, AlertTriangle, CheckCircle, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import SOSLocationMap from "./SOSLocationMap";
 
-const sosIcon = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+interface MapAlertState {
+  alertId: string;
+  lat: number;
+  lng: number;
+  userId: string;
+}
 
 const AuthoritySOSAlerts = () => {
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [mapAlert, setMapAlert] = useState<{ lat: number; lng: number; userId: string } | null>(null);
+  const [mapAlert, setMapAlert] = useState<MapAlertState | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -36,7 +32,6 @@ const AuthoritySOSAlerts = () => {
     };
     fetchAlerts();
 
-    // Realtime subscription for new SOS alerts
     const channel = supabase
       .channel("sos-realtime")
       .on(
@@ -125,10 +120,10 @@ const AuthoritySOSAlerts = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 h-8 text-xs border-primary/30 text-primary hover:bg-primary/10"
-                    onClick={() => setMapAlert({ lat: alert.latitude, lng: alert.longitude, userId: alert.user_id })}
+                    className="flex-1 h-8 text-xs border-sos/30 text-sos hover:bg-sos/10"
+                    onClick={() => setMapAlert({ alertId: alert.id, lat: alert.latitude, lng: alert.longitude, userId: alert.user_id })}
                   >
-                    <Navigation className="h-3 w-3 mr-1" /> Open Location
+                    <Navigation className="h-3 w-3 mr-1" /> Live Location
                   </Button>
                 )}
                 <Button
@@ -137,7 +132,7 @@ const AuthoritySOSAlerts = () => {
                   className="flex-1 h-8 text-xs border-safe/30 text-safe hover:bg-safe/10"
                   onClick={() => resolveAlert(alert.id)}
                 >
-                  <CheckCircle className="h-3 w-3 mr-1" /> Mark as Resolved
+                  <CheckCircle className="h-3 w-3 mr-1" /> Resolve
                 </Button>
               </div>
             </motion.div>
@@ -147,9 +142,9 @@ const AuthoritySOSAlerts = () => {
 
       {resolvedAlerts.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Resolved Alerts ({resolvedAlerts.length})</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Resolved ({resolvedAlerts.length})</h3>
           {resolvedAlerts.map((alert) => (
-            <div key={alert.id} className="rounded-xl border border-border/30 p-4" style={{ background: "hsl(220 25% 12%)" }}>
+            <div key={alert.id} className="rounded-xl border border-border/30 bg-muted/10 p-4">
               <div className="flex items-start justify-between mb-2">
                 <Badge variant="secondary">Resolved</Badge>
                 <span className="text-[10px] text-muted-foreground">{format(new Date(alert.activated_at), "MMM d, HH:mm")}</span>
@@ -164,62 +159,22 @@ const AuthoritySOSAlerts = () => {
       )}
 
       {alerts.length === 0 && (
-        <div className="rounded-xl border border-border/30 p-8 text-center" style={{ background: "hsl(220 25% 12%)" }}>
+        <div className="rounded-xl border border-border/30 bg-muted/10 p-8 text-center">
           <ShieldAlert className="mx-auto h-8 w-8 text-muted-foreground/30" />
           <p className="mt-2 text-sm text-muted-foreground">No SOS alerts recorded</p>
         </div>
       )}
 
-      {/* In-app Location Map Modal */}
+      {/* Live Location Map Modal */}
       <AnimatePresence>
         {mapAlert && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setMapAlert(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-lg rounded-xl border border-primary/30 bg-card overflow-hidden neon-border"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between p-3 border-b border-border">
-                <div className="flex items-center gap-2">
-                  <Navigation className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-bold text-foreground">Victim Location</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {mapAlert.lat.toFixed(4)}, {mapAlert.lng.toFixed(4)}
-                  </span>
-                </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setMapAlert(null)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="h-[350px]">
-                <MapContainer
-                  center={[mapAlert.lat, mapAlert.lng]}
-                  zoom={16}
-                  style={{ height: "100%", width: "100%" }}
-                  zoomControl={false}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <Marker position={[mapAlert.lat, mapAlert.lng]} icon={sosIcon}>
-                    <Popup>
-                      <strong className="text-red-600">🚨 SOS Location</strong><br />
-                      User: {mapAlert.userId.slice(0, 8)}...
-                    </Popup>
-                  </Marker>
-                </MapContainer>
-              </div>
-            </motion.div>
-          </motion.div>
+          <SOSLocationMap
+            alertId={mapAlert.alertId}
+            initialLat={mapAlert.lat}
+            initialLng={mapAlert.lng}
+            userId={mapAlert.userId}
+            onClose={() => setMapAlert(null)}
+          />
         )}
       </AnimatePresence>
     </motion.div>
