@@ -109,7 +109,7 @@ const AuthorityDashboard = () => {
       </nav>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 pb-24">
         {activeView === "sos" && <AuthoritySOSAlerts />}
         {activeView === "complaints" && <AuthorityComplaints />}
         {activeView === "evidence" && <AuthorityEvidence />}
