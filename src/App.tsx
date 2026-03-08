@@ -17,6 +17,7 @@ import Contacts from "./pages/Contacts";
 import EvidenceVault from "./pages/EvidenceVault";
 import SafetyMap from "./pages/SafetyMap";
 import CaseTracking from "./pages/CaseTracking";
+import CaseChat from "./pages/CaseChat";
 import Helplines from "./pages/Helplines";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
