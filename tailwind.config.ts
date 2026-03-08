@@ -13,8 +13,8 @@ export default {
       },
     },
     fontFamily: {
-      display: ['Playfair Display', 'serif'],
-      body: ['DM Sans', 'sans-serif'],
+      display: ['Space Grotesk', 'sans-serif'],
+      body: ['Inter', 'sans-serif'],
     },
     extend: {
       colors: {
@@ -89,12 +89,12 @@ export default {
           to: { height: "0" },
         },
         "sos-pulse": {
-          "0%, 100%": { transform: "scale(1)", boxShadow: "0 0 0 0 hsl(var(--sos) / 0.5)" },
-          "50%": { transform: "scale(1.05)", boxShadow: "0 0 40px 15px hsl(var(--sos) / 0.25)" },
+          "0%, 100%": { transform: "scale(1)", boxShadow: "0 0 0 0 hsl(var(--sos) / 0.6)" },
+          "50%": { transform: "scale(1.08)", boxShadow: "0 0 60px 20px hsl(var(--sos) / 0.3)" },
         },
         "ripple": {
-          "0%": { transform: "scale(1)", opacity: "0.4" },
-          "100%": { transform: "scale(3)", opacity: "0" },
+          "0%": { transform: "scale(1)", opacity: "0.5" },
+          "100%": { transform: "scale(4)", opacity: "0" },
         },
       },
       animation: {
