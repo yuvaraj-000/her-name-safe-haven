@@ -106,9 +106,10 @@ const Report = () => {
         hasEvidence = true;
       }
 
-      // Auto AI verification
+      // AI Pre-Screening: verify + assign priority
       setVerifying(true);
       try {
+        // Step 1: AI Verification
         const { data: verifyData } = await supabase.functions.invoke("ai-summarize", {
           body: {
             incident: { ...incident, has_evidence: hasEvidence },
@@ -117,7 +118,6 @@ const Report = () => {
         });
 
         if (verifyData?.result) {
-          // Parse the AI result to determine status
           const resultText = verifyData.result.toUpperCase();
           let status = "needs_review";
           if (resultText.includes("VERIFIED")) status = "verified";
@@ -128,16 +128,22 @@ const Report = () => {
             verification_result: verifyData.result,
           }).eq("id", incident.id);
         }
+
+        // Step 2: AI Priority Screening
+        await supabase.functions.invoke("ai-screen", {
+          body: {
+            incident_id: incident.id,
+            incident: { ...incident, has_evidence: hasEvidence },
+          },
+        });
       } catch {
-        // AI verification failure doesn't block submission
+        // AI failure doesn't block submission
       }
       setVerifying(false);
 
       toast({
-        title: "Report Submitted & Verified",
-        description: anonymous
-          ? "Your anonymous report has been securely submitted and AI-verified."
-          : "Your report has been securely submitted and AI-verified.",
+        title: "Report Submitted & Screened",
+        description: `Your ${anonymous ? "anonymous " : ""}report has been AI-screened and prioritized. Check Case Chat for updates.`,
       });
       navigate("/cases");
     } catch (error: any) {

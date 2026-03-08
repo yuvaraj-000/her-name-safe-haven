@@ -128,6 +128,7 @@ export type Database = {
       }
       incidents: {
         Row: {
+          ai_summary: string | null
           case_id: string | null
           created_at: string
           description: string
@@ -138,6 +139,7 @@ export type Database = {
           latitude: number | null
           location: string | null
           longitude: number | null
+          priority_level: string | null
           revealed_at: string | null
           status: string
           threat_level: string | null
@@ -148,6 +150,7 @@ export type Database = {
           verification_status: string | null
         }
         Insert: {
+          ai_summary?: string | null
           case_id?: string | null
           created_at?: string
           description: string
@@ -158,6 +161,7 @@ export type Database = {
           latitude?: number | null
           location?: string | null
           longitude?: number | null
+          priority_level?: string | null
           revealed_at?: string | null
           status?: string
           threat_level?: string | null
@@ -168,6 +172,7 @@ export type Database = {
           verification_status?: string | null
         }
         Update: {
+          ai_summary?: string | null
           case_id?: string | null
           created_at?: string
           description?: string
@@ -178,6 +183,7 @@ export type Database = {
           latitude?: number | null
           location?: string | null
           longitude?: number | null
+          priority_level?: string | null
           revealed_at?: string | null
           status?: string
           threat_level?: string | null
