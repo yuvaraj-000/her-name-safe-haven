@@ -22,6 +22,7 @@ const sosIcon = new L.Icon({
 const AuthoritySOSAlerts = () => {
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mapAlert, setMapAlert] = useState<{ lat: number; lng: number; userId: string } | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
