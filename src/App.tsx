@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AuthorityProvider } from "@/contexts/AuthorityContext";
+import { SOSProvider } from "@/contexts/SOSContext";
+import SOSActiveBanner from "@/components/SOSActiveBanner";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ProtectedAuthorityRoute from "@/components/authority/ProtectedAuthorityRoute";
 import Index from "./pages/Index";
