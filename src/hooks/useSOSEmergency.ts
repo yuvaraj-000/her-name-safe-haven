@@ -134,13 +134,14 @@ export function useSOSEmergency() {
         recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
         recorder.onstop = async () => {
           audioStream.getTracks().forEach((t) => t.stop());
-          if (chunksRef.current.length > 0 && user && state.alertId) {
+          const currentUser = userRef.current;
+          if (chunksRef.current.length > 0 && currentUser) {
             const blob = new Blob(chunksRef.current, { type: "audio/webm" });
             const fileName = `sos-audio-${Date.now()}.webm`;
-            const filePath = `${user.id}/${fileName}`;
+            const filePath = `${currentUser.id}/${fileName}`;
             await supabase.storage.from("evidence").upload(filePath, blob);
             await supabase.from("evidence").insert({
-              user_id: user.id, file_name: fileName, file_path: filePath,
+              user_id: currentUser.id, file_name: fileName, file_path: filePath,
               file_type: "audio/webm", file_size: blob.size, source: "sos_recording",
             });
           }
