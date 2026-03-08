@@ -18,7 +18,7 @@ const AuthorityEvidence = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchEvidence = async () => {
-    const { data } = await supabase.rpc("get_all_evidence");
+    const { data } = await supabase.rpc("get_all_evidence" as any);
     setEvidence(data || []);
     setLoading(false);
   };

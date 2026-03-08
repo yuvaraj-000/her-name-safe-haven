@@ -347,7 +347,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_all_evidence: {
+        Args: never
+        Returns: {
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string
+          hash_sha256: string | null
+          id: string
+          incident_id: string | null
+          source: string | null
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "evidence"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
     }
     Enums: {
       [_ in never]: never
