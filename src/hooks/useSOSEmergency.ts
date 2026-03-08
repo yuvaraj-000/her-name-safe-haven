@@ -16,6 +16,7 @@ interface SOSState {
   elapsedSeconds: number;
   latitude: number | null;
   longitude: number | null;
+  videoStream: MediaStream | null;
 }
 
 export function useSOSEmergency() {
