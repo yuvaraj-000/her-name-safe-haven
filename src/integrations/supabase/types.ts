@@ -130,18 +130,27 @@ export type Database = {
         Row: {
           ai_summary: string | null
           case_id: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          contact_preference: string | null
           created_at: string
           description: string
           id: string
           identity_revealed: boolean | null
           incident_date: string | null
+          incident_time: string | null
+          incident_type: string | null
           is_anonymous: boolean | null
           latitude: number | null
           location: string | null
           longitude: number | null
           priority_level: string | null
           revealed_at: string | null
+          safety_status: string | null
           status: string
+          suspect_name: string | null
+          suspect_phone: string | null
+          suspect_relationship: string | null
           threat_level: string | null
           title: string
           updated_at: string
@@ -152,18 +161,27 @@ export type Database = {
         Insert: {
           ai_summary?: string | null
           case_id?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          contact_preference?: string | null
           created_at?: string
           description: string
           id?: string
           identity_revealed?: boolean | null
           incident_date?: string | null
+          incident_time?: string | null
+          incident_type?: string | null
           is_anonymous?: boolean | null
           latitude?: number | null
           location?: string | null
           longitude?: number | null
           priority_level?: string | null
           revealed_at?: string | null
+          safety_status?: string | null
           status?: string
+          suspect_name?: string | null
+          suspect_phone?: string | null
+          suspect_relationship?: string | null
           threat_level?: string | null
           title: string
           updated_at?: string
@@ -174,18 +192,27 @@ export type Database = {
         Update: {
           ai_summary?: string | null
           case_id?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          contact_preference?: string | null
           created_at?: string
           description?: string
           id?: string
           identity_revealed?: boolean | null
           incident_date?: string | null
+          incident_time?: string | null
+          incident_type?: string | null
           is_anonymous?: boolean | null
           latitude?: number | null
           location?: string | null
           longitude?: number | null
           priority_level?: string | null
           revealed_at?: string | null
+          safety_status?: string | null
           status?: string
+          suspect_name?: string | null
+          suspect_phone?: string | null
+          suspect_relationship?: string | null
           threat_level?: string | null
           title?: string
           updated_at?: string
