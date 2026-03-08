@@ -28,7 +28,7 @@ export const useSOS = () => {
 
 export const SOSProvider = ({ children }: { children: ReactNode }) => {
   const sos = useSOSEmergency();
-  const { startAlarm, stopAlarm } = useSOSAlarm();
+  const { startAlarm, stopAlarm, resumeAlarm } = useSOSAlarm();
 
   const originalStartCountdown = sos.startCountdown;
   const wrappedStartCountdown = () => {
@@ -38,6 +38,16 @@ export const SOSProvider = ({ children }: { children: ReactNode }) => {
     originalStartCountdown();
   };
 
+  // When camera recording starts, resume alarm in case getUserMedia suspended it
+  useEffect(() => {
+    if (sos.isRecording && sos.active) {
+      // Small delay to let getUserMedia settle, then force resume
+      const timer = setTimeout(() => resumeAlarm(), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [sos.isRecording, sos.active]);
+
+  // Stop alarm when SOS is cancelled
   useEffect(() => {
     if (!sos.active) {
       stopAlarm();
