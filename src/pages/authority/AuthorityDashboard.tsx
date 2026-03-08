@@ -78,30 +78,34 @@ const AuthorityDashboard = () => {
         </div>
       </div>
 
-      {/* Nav Tabs */}
-      <div className="sticky top-[53px] z-40 border-b border-border bg-card/80 backdrop-blur-xl px-2 py-2 overflow-x-auto">
-        <div className="flex gap-1 min-w-max">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveView(item.id)}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
-                activeView === item.id
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
-              }`}
-            >
-              <item.icon className="h-3.5 w-3.5" />
-              {item.label}
-              {item.badge !== undefined && item.badge > 0 && (
-                <Badge variant="destructive" className="ml-1 h-4 min-w-4 px-1 text-[9px]">
-                  {item.badge}
-                </Badge>
-              )}
-            </button>
-          ))}
+      {/* Bottom Nav */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-md items-center justify-around py-2">
+          {navItems.map((item) => {
+            const isActive = activeView === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveView(item.id)}
+                className={cn(
+                  "flex flex-col items-center gap-0.5 px-2 py-1.5 text-[10px] transition-all rounded-lg relative",
+                  isActive
+                    ? "text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.5)]"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <item.icon className={cn("h-5 w-5", isActive && "drop-shadow-[0_0_4px_hsl(var(--primary)/0.4)]")} />
+                <span className={cn(isActive && "font-semibold")}>{item.label}</span>
+                {item.badge !== undefined && item.badge > 0 && (
+                  <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[9px]">
+                    {item.badge}
+                  </Badge>
+                )}
+              </button>
+            );
+          })}
         </div>
-      </div>
+      </nav>
 
       {/* Content */}
       <div className="p-4">
