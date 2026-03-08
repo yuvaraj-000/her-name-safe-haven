@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShieldAlert, MapPin, Clock, User, AlertTriangle, CheckCircle } from "lucide-react";
+import { ShieldAlert, MapPin, Clock, User, AlertTriangle, CheckCircle, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
