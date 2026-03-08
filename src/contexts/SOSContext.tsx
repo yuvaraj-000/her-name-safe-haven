@@ -41,17 +41,19 @@ export const SOSProvider = ({ children }: { children: ReactNode }) => {
     originalStartCountdown();
   }, [sos.active, originalStartCountdown, startAlarm]);
 
-  // Shake detection: activate SOS on 3-4 fast shakes
+  // Shake detection: activate SOS on 3 fast shakes within 2 seconds
+  const shakeCallback = useCallback(() => {
+    if (user && !sos.active) {
+      wrappedStartCountdown();
+    }
+  }, [user, sos.active, wrappedStartCountdown]);
+
   useShakeDetection({
-    threshold: 25,
+    threshold: 20,
     shakeCount: 3,
-    timeWindow: 1500,
+    timeWindow: 2000,
     cooldown: 5000,
-    onShake: useCallback(() => {
-      if (user && !sos.active) {
-        wrappedStartCountdown();
-      }
-    }, [user, sos.active, wrappedStartCountdown]),
+    onShake: shakeCallback,
   });
 
   // When camera recording starts, resume alarm in case getUserMedia suspended it
