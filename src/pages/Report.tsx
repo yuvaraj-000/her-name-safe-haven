@@ -22,6 +22,7 @@ import EvidenceUpload from "@/components/report/EvidenceUpload";
 import SafetyStatusField from "@/components/report/SafetyStatusField";
 import SuspectInfo from "@/components/report/SuspectInfo";
 import ContactPreference from "@/components/report/ContactPreference";
+import FollowUpQuestionnaire from "@/components/report/FollowUpQuestionnaire";
 
 const THREAT_LEVELS = [
   { value: "low", label: "Low", color: "bg-safe/20 text-safe border-safe/30" },
@@ -41,6 +42,7 @@ const Report = () => {
   const [anonymous, setAnonymous] = useState(false);
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [submittedIncident, setSubmittedIncident] = useState<any>(null);
   const [form, setForm] = useState({
     title: "", description: "", location: "", date: "", time: "",
     threatLevel: "medium", incidentType: "",
@@ -142,9 +144,18 @@ const Report = () => {
 
       toast({
         title: "Report Submitted & Screened",
-        description: `Your ${anonymous ? "anonymous " : ""}report has been AI-screened and prioritized.`,
+        description: `Your ${anonymous ? "anonymous " : ""}report has been AI-screened. Please answer follow-up questions.`,
       });
-      navigate("/cases");
+
+      // Show follow-up questionnaire instead of navigating away
+      setSubmittedIncident({
+        ...incident,
+        incident_type: form.incidentType,
+        incident_time: form.time,
+        suspect_name: form.suspectName,
+        suspect_relationship: form.suspectRelationship,
+        safety_status: form.safetyStatus,
+      });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -152,6 +163,20 @@ const Report = () => {
       setVerifying(false);
     }
   };
+
+  // Show questionnaire after submission
+  if (submittedIncident) {
+    return (
+      <div className="min-h-screen bg-background pb-24 pt-14 px-6">
+        <FollowUpQuestionnaire
+          incident={submittedIncident}
+          onComplete={() => navigate("/cases")}
+          onSkip={() => navigate("/cases")}
+        />
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-24 pt-14 px-6">
