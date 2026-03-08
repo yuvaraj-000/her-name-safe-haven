@@ -1,15 +1,56 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldAlert, X } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const SOSButton = () => {
+  const { user } = useAuth();
   const [active, setActive] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [alertId, setAlertId] = useState<string | null>(null);
+
+  const activateSOS = async () => {
+    setActive(true);
+    if (!user) return;
+
+    // Get location
+    let lat: number | null = null;
+    let lng: number | null = null;
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+      );
+      lat = pos.coords.latitude;
+      lng = pos.coords.longitude;
+    } catch {}
+
+    // Create SOS alert in DB
+    const { data } = await supabase.from("sos_alerts").insert({
+      user_id: user.id,
+      status: "active" as const,
+      latitude: lat,
+      longitude: lng,
+    }).select().single();
+
+    if (data) setAlertId(data.id);
+  };
+
+  const cancelSOS = async () => {
+    setActive(false);
+    setCountdown(null);
+    if (alertId && user) {
+      await supabase.from("sos_alerts").update({
+        status: "cancelled" as const,
+        resolved_at: new Date().toISOString(),
+      }).eq("id", alertId);
+      setAlertId(null);
+    }
+  };
 
   const handlePress = useCallback(() => {
     if (active) {
-      setActive(false);
-      setCountdown(null);
+      cancelSOS();
       return;
     }
     setCountdown(3);
@@ -17,18 +58,17 @@ const SOSButton = () => {
       setCountdown((prev) => {
         if (prev === null || prev <= 1) {
           clearInterval(interval);
-          setActive(true);
+          activateSOS();
           return null;
         }
         return prev - 1;
       });
     }, 1000);
-  }, [active]);
+  }, [active, user]);
 
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="relative">
-        {/* Ripple rings */}
         {active && (
           <>
             <span className="absolute inset-0 rounded-full bg-sos/20 animate-ripple" />
@@ -65,19 +105,11 @@ const SOSButton = () => {
 
       <AnimatePresence>
         {active && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="flex flex-col items-center gap-3"
-          >
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="flex flex-col items-center gap-3">
             <p className="text-sm text-muted-foreground text-center max-w-[250px]">
-              Emergency alert sent to your trusted contacts. Location sharing active.
+              Emergency alert active. Location shared. Trusted contacts notified.
             </p>
-            <button
-              onClick={() => { setActive(false); setCountdown(null); }}
-              className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
-            >
+            <button onClick={cancelSOS} className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 transition-colors">
               <X className="h-4 w-4" /> Cancel Emergency
             </button>
           </motion.div>
@@ -86,7 +118,7 @@ const SOSButton = () => {
 
       {!active && countdown === null && (
         <p className="text-sm text-muted-foreground text-center max-w-[250px]">
-          Press and hold to activate emergency SOS. A 3-second countdown will begin.
+          Press to activate emergency SOS. A 3-second countdown will begin.
         </p>
       )}
     </div>

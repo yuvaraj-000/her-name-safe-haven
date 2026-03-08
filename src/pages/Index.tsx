@@ -1,34 +1,34 @@
 import { motion } from "framer-motion";
-import { Shield, FileText, Users, Phone, ChevronRight } from "lucide-react";
+import { Shield, FileText, Lock, Map, ClipboardList, Phone, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
+import { useAuth } from "@/contexts/AuthContext";
 
 const features = [
   { icon: Shield, title: "Emergency SOS", desc: "Instant alert with location tracking", path: "/sos", color: "bg-sos/10 text-sos" },
   { icon: FileText, title: "Report Incident", desc: "Secure & anonymous reporting", path: "/report", color: "bg-primary/10 text-primary" },
-  { icon: Users, title: "Trusted Contacts", desc: "Manage your safety network", path: "/contacts", color: "bg-safe/10 text-safe" },
-  { icon: Phone, title: "Helplines", desc: "Quick access to helplines", path: "/helplines", color: "bg-accent/10 text-accent" },
+  { icon: Lock, title: "Evidence Vault", desc: "Encrypted file storage", path: "/vault", color: "bg-safe/10 text-safe" },
+  { icon: Map, title: "Safety Map", desc: "Community danger zones", path: "/safety-map", color: "bg-accent/10 text-accent" },
+  { icon: ClipboardList, title: "Case Tracking", desc: "Monitor report progress", path: "/cases", color: "bg-warning/10 text-warning" },
+  { icon: Phone, title: "Helplines", desc: "Quick access to help", path: "/helplines", color: "bg-primary/10 text-primary" },
 ];
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Hero */}
       <div className="relative overflow-hidden bg-gradient-to-br from-secondary to-secondary/90 px-6 pb-10 pt-14">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 70% 30%, hsl(var(--primary)), transparent 60%)" }} />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10">
           <h1 className="font-display text-4xl font-bold text-secondary-foreground">
             Her<span className="text-gradient-primary">Name</span>
           </h1>
           <p className="mt-2 text-sm text-secondary-foreground/70 max-w-[280px]">
-            Your safety companion. Instant protection, secure evidence, and trusted support.
+            Hi {firstName}! Your safety companion is always ready.
           </p>
           <button
             onClick={() => navigate("/sos")}
@@ -73,13 +73,7 @@ const Index = () => {
           "Save emergency numbers on speed dial for quick access.",
           "Trust your instincts — if something feels wrong, seek help immediately.",
         ].map((tip, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 + 0.1 * i }}
-            className="mb-2 flex items-start gap-3 rounded-lg bg-card p-3 shadow-card"
-          >
+          <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + 0.1 * i }} className="mb-2 flex items-start gap-3 rounded-lg bg-card p-3 shadow-card">
             <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <p className="text-sm text-card-foreground/80">{tip}</p>
           </motion.div>
