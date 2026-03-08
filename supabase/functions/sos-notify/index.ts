@@ -86,10 +86,21 @@ serve(async (req) => {
     }
 
     if (action === "update_location") {
+      // Update current location on alert
       await supabase
         .from("sos_alerts")
         .update({ latitude, longitude })
         .eq("id", alert_id);
+
+      // Save to location history for movement path tracking
+      await supabase
+        .from("sos_location_history")
+        .insert({
+          alert_id,
+          user_id,
+          latitude,
+          longitude,
+        });
 
       return new Response(
         JSON.stringify({ success: true }),
