@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
-import { FileText, Clock, CheckCircle2, Search, AlertCircle, Shield } from "lucide-react";
+import { FileText, Clock, CheckCircle2, Search, AlertCircle, Shield, MessageCircle, Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const statusConfig: Record<string, { icon: any; color: string; label: string }> = {
   submitted: { icon: FileText, color: "text-primary bg-primary/10", label: "Submitted" },
@@ -17,6 +20,7 @@ const statusOrder = ["submitted", "under_review", "investigating", "resolved"];
 
 const CaseTracking = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const { data: cases = [], isLoading } = useQuery({
     queryKey: ["cases", user?.id],
@@ -35,7 +39,7 @@ const CaseTracking = () => {
   return (
     <div className="min-h-screen bg-background pb-24 pt-14 px-6">
       <h1 className="font-display text-2xl font-bold text-foreground mb-1">Case Tracking</h1>
-      <p className="text-sm text-muted-foreground mb-6">Monitor your report progress</p>
+      <p className="text-sm text-muted-foreground mb-6">Monitor your report progress & chat with police</p>
 
       {isLoading ? (
         <div className="flex justify-center py-12">
@@ -63,6 +67,21 @@ const CaseTracking = () => {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
+                    {/* Case ID badge */}
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold text-primary font-mono">
+                        {c.case_id || "Generating..."}
+                      </span>
+                      {c.is_anonymous ? (
+                        <Badge variant="outline" className="text-[9px] border-safe/30 text-safe gap-0.5">
+                          <EyeOff className="h-2.5 w-2.5" /> Anonymous
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[9px] border-primary/30 text-primary gap-0.5">
+                          <Eye className="h-2.5 w-2.5" /> Identified
+                        </Badge>
+                      )}
+                    </div>
                     <h3 className="text-sm font-semibold text-card-foreground">{c.title}</h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {new Date(c.created_at).toLocaleDateString()} · {c.location || "No location"}
@@ -101,6 +120,17 @@ const CaseTracking = () => {
                     <span key={s} className="text-[9px] text-muted-foreground text-center flex-1">{statusConfig[s].label}</span>
                   ))}
                 </div>
+
+                {/* Chat Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-4 gap-2 text-xs border-primary/30 text-primary hover:bg-primary/10"
+                  onClick={() => navigate(`/cases/${c.id}/chat`)}
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  Chat with Police (Anonymous)
+                </Button>
               </motion.div>
             );
           })}
