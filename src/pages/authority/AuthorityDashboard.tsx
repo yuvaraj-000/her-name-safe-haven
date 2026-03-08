@@ -14,8 +14,9 @@ import AuthoritySOSAlerts from "@/components/authority/AuthoritySOSAlerts";
 import AuthorityEvidence from "@/components/authority/AuthorityEvidence";
 import AuthorityCaseManagement from "@/components/authority/AuthorityCaseManagement";
 import AuthorityMap from "@/components/authority/AuthorityMap";
+import AuthorityCaseChat from "@/components/authority/AuthorityCaseChat";
 
-type DashboardView = "overview" | "sos" | "complaints" | "evidence" | "cases" | "map";
+type DashboardView = "overview" | "sos" | "complaints" | "evidence" | "cases" | "chat" | "map";
 
 const AuthorityDashboard = () => {
   const navigate = useNavigate();
