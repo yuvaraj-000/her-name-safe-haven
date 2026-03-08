@@ -34,8 +34,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <AuthorityProvider>
-            <Routes>
+          <SOSProvider>
+            <SOSActiveBanner />
+            <AuthorityProvider>
+              <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/authority" element={<AuthorityLogin />} />
               <Route path="/authority/dashboard" element={<ProtectedAuthorityRoute><AuthorityDashboard /></ProtectedAuthorityRoute>} />
