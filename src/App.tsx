@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AuthorityProvider } from "@/contexts/AuthorityContext";
 import { SOSProvider } from "@/contexts/SOSContext";
 import SOSActiveBanner from "@/components/SOSActiveBanner";
+import SOSCameraPreview from "@/components/SOSCameraPreview";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ProtectedAuthorityRoute from "@/components/authority/ProtectedAuthorityRoute";
 import Index from "./pages/Index";
