@@ -107,7 +107,6 @@ const AuthorityCaseManagement = () => {
                   <span className="text-primary font-mono font-bold">{c.case_id || "Case #" + c.id.slice(0, 8)}</span> • {format(new Date(c.created_at), "MMM d, yyyy")}
                   {c.is_anonymous && " • 🛡️ Anonymous"}
                 </p>
-                </p>
               </div>
               <div className="flex gap-1">
                 {c.threat_level === "high" && (
