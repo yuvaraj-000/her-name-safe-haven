@@ -59,25 +59,21 @@ const Index = () => {
 
       {/* Anonymous Report Box */}
       <div className="px-6 pb-24">
-        <motion.div
+        <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
+          onClick={() => navigate("/report")}
+          className="w-full flex items-center gap-4 rounded-xl border border-primary/20 bg-card p-5 text-left transition-all hover:border-primary/40 hover:shadow-neon active:scale-[0.98] neon-border-subtle"
         >
-          <button
-            type="button"
-            onClick={() => navigate("/report")}
-            className="w-full flex items-center gap-4 rounded-xl border border-primary/20 bg-card p-5 text-left transition-all hover:border-primary/40 hover:shadow-neon active:scale-[0.98] neon-border-subtle relative z-10"
-          >
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 shadow-[0_0_15px_hsl(var(--primary)/0.2)]">
-              <AlertTriangle className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <span className="text-sm font-display font-semibold text-foreground">Report Anonymous Complaint</span>
-              <p className="text-[11px] text-muted-foreground mt-0.5">File a secure report to police without revealing your identity</p>
-            </div>
-          </button>
-        </motion.div>
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 shadow-[0_0_15px_hsl(var(--primary)/0.2)]">
+            <AlertTriangle className="h-6 w-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <span className="text-sm font-display font-semibold text-foreground">Report Anonymous Complaint</span>
+            <p className="text-[11px] text-muted-foreground mt-0.5">File a secure report to police without revealing your identity</p>
+          </div>
+        </motion.button>
       </div>
 
       <BottomNav />
