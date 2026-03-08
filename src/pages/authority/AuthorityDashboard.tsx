@@ -197,6 +197,7 @@ const AuthorityDashboard = () => {
         {activeView === "complaints" && <AuthorityComplaints />}
         {activeView === "evidence" && <AuthorityEvidence />}
         {activeView === "cases" && <AuthorityCaseManagement />}
+        {activeView === "chat" && <AuthorityCaseChat />}
         {activeView === "map" && <AuthorityMap />}
       </div>
     </div>
