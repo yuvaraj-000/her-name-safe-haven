@@ -368,6 +368,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_evidence_signed_url: { Args: { file_path: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
