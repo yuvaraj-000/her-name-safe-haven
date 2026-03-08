@@ -10,7 +10,7 @@ const menuItems = [
   { icon: Shield, label: "Safety Settings", desc: "SOS timer, auto-record" },
   { icon: Bell, label: "Notifications", desc: "Alert preferences" },
   { icon: Lock, label: "Privacy & Security", desc: "Encryption, data control" },
-  { icon: Info, label: "About HerName", desc: "Version 1.0" },
+  { icon: Info, label: "About HerNet", desc: "Version 1.0" },
 ];
 
 const Profile = () => {
