@@ -1,0 +1,2 @@
+ALTER TABLE public.evidence DROP CONSTRAINT evidence_source_check;
+ALTER TABLE public.evidence ADD CONSTRAINT evidence_source_check CHECK (source = ANY (ARRAY['upload'::text, 'sos_recording'::text, 'auto_capture'::text, 'sos_video_recording'::text]));
