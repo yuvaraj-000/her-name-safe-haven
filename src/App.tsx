@@ -35,8 +35,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <SOSProvider>
-            <SOSActiveBanner />
             <AuthorityProvider>
+            <SOSActiveBanner />
               <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/authority" element={<AuthorityLogin />} />
