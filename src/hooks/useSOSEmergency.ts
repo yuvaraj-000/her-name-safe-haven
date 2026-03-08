@@ -286,7 +286,7 @@ export function useSOSEmergency() {
     if (!data) return;
 
     const alertId = data.id;
-
+    alertIdRef.current = alertId;
     setState((s) => ({
       ...s,
       active: true,
