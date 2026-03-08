@@ -3,6 +3,7 @@ import { Shield, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSOS } from "@/contexts/SOSContext";
 
 const Index = () => {
   const navigate = useNavigate();
