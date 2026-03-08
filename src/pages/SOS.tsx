@@ -1,11 +1,13 @@
 import SOSButton from "@/components/SOSButton";
 import BottomNav from "@/components/BottomNav";
 import { motion } from "framer-motion";
-import { Shield, MapPin, Mic, Video, AlertTriangle, Wifi, WifiOff } from "lucide-react";
+import { Shield, MapPin, Mic, AlertTriangle, Wifi, WifiOff, FileText } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SOS = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -37,7 +39,7 @@ const SOS = () => {
 
       <SOSButton />
 
-      {/* How it works */}
+      {/* How SOS Works */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -59,6 +61,27 @@ const SOS = () => {
             </div>
           ))}
         </div>
+      </motion.div>
+
+      {/* Anonymous Report Button */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="mt-6 w-full max-w-sm px-6"
+      >
+        <button
+          onClick={() => navigate("/report")}
+          className="w-full rounded-xl border border-primary/30 bg-primary/10 p-4 flex items-center gap-4 transition-all hover:bg-primary/20 hover:border-primary/50 active:scale-[0.98] neon-border"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/20">
+            <FileText className="h-5 w-5 text-primary" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-semibold text-foreground">Report Anonymous Complaint</p>
+            <p className="text-[11px] text-muted-foreground">File a complaint to authorities securely</p>
+          </div>
+        </button>
       </motion.div>
 
       <BottomNav />
