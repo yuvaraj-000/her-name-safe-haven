@@ -1,7 +1,9 @@
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useCallback } from "react";
 import { useSOSEmergency } from "@/hooks/useSOSEmergency";
 import { useSOSAlarm } from "@/hooks/useSOSAlarm";
+import { useShakeDetection } from "@/hooks/useShakeDetection";
 import { useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SOSContextType {
   active: boolean;
