@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      case_messages: {
+        Row: {
+          created_at: string
+          id: string
+          incident_id: string
+          message: string
+          sender_id: string | null
+          sender_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          incident_id: string
+          message: string
+          sender_id?: string | null
+          sender_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          incident_id?: string
+          message?: string
+          sender_id?: string | null
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_messages_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       emergency_contacts: {
         Row: {
           created_at: string
@@ -93,14 +128,17 @@ export type Database = {
       }
       incidents: {
         Row: {
+          case_id: string | null
           created_at: string
           description: string
           id: string
+          identity_revealed: boolean | null
           incident_date: string | null
           is_anonymous: boolean | null
           latitude: number | null
           location: string | null
           longitude: number | null
+          revealed_at: string | null
           status: string
           threat_level: string | null
           title: string
@@ -110,14 +148,17 @@ export type Database = {
           verification_status: string | null
         }
         Insert: {
+          case_id?: string | null
           created_at?: string
           description: string
           id?: string
+          identity_revealed?: boolean | null
           incident_date?: string | null
           is_anonymous?: boolean | null
           latitude?: number | null
           location?: string | null
           longitude?: number | null
+          revealed_at?: string | null
           status?: string
           threat_level?: string | null
           title: string
@@ -127,14 +168,17 @@ export type Database = {
           verification_status?: string | null
         }
         Update: {
+          case_id?: string | null
           created_at?: string
           description?: string
           id?: string
+          identity_revealed?: boolean | null
           incident_date?: string | null
           is_anonymous?: boolean | null
           latitude?: number | null
           location?: string | null
           longitude?: number | null
+          revealed_at?: string | null
           status?: string
           threat_level?: string | null
           title?: string
