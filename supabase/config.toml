@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.sos-notify]
 verify_jwt = false
+
+[functions.ai-followup]
+verify_jwt = false
