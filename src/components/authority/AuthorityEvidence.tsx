@@ -44,9 +44,17 @@ const AuthorityEvidence = () => {
   }, []);
 
   const handleDownload = async (filePath: string, fileName: string) => {
-    const { data } = await supabase.storage.from("evidence").createSignedUrl(filePath, 300);
-    if (data?.signedUrl) {
-      window.open(data.signedUrl, "_blank");
+    try {
+      const { data, error } = await supabase.functions.invoke("evidence-download", {
+        body: { file_path: filePath },
+      });
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, "_blank");
+      } else {
+        console.error("Failed to get signed URL:", error || data?.error);
+      }
+    } catch (err) {
+      console.error("Download error:", err);
     }
   };
 
