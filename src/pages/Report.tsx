@@ -157,6 +157,9 @@ const Report = () => {
   return (
     <div className="min-h-screen bg-background pb-24 pt-14 px-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <button onClick={() => navigate("/")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
+          <ArrowLeft className="h-4 w-4" /> Back to Home
+        </button>
         <h1 className="font-display text-2xl font-bold text-foreground mb-1">Report Incident</h1>
         <p className="text-sm text-muted-foreground mb-6">All reports are encrypted & AI-verified</p>
 
