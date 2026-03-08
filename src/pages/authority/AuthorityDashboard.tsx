@@ -57,6 +57,7 @@ const AuthorityDashboard = () => {
     { id: "complaints" as const, icon: FileText, label: "Complaints", badge: stats.complaints },
     { id: "evidence" as const, icon: FolderOpen, label: "Evidence" },
     { id: "cases" as const, icon: ClipboardList, label: "Cases" },
+    { id: "chat" as const, icon: Bell, label: "Chat" },
     { id: "map" as const, icon: MapPin, label: "Live Map" },
   ];
 
