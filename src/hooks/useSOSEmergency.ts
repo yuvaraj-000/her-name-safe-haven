@@ -317,17 +317,49 @@ export function useSOSEmergency() {
   };
 
   const cancelSOS = async () => {
-    stopAllProcesses();
+    // Stop recorder first (onstop will use alertIdRef to save video)
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null;
+    }
 
-    if (state.alertId && user) {
+    // Small delay to let onstop fire and capture refs
+    await new Promise((r) => setTimeout(r, 200));
+
+    // Now stop other processes
+    if (locationWatchRef.current !== null) {
+      navigator.geolocation.clearWatch(locationWatchRef.current);
+      locationWatchRef.current = null;
+    }
+    if (escalationTimerRef.current) {
+      clearTimeout(escalationTimerRef.current);
+      escalationTimerRef.current = null;
+    }
+    if (locationUpdateRef.current) {
+      clearInterval(locationUpdateRef.current);
+      locationUpdateRef.current = null;
+    }
+    if (elapsedRef.current) {
+      clearInterval(elapsedRef.current);
+      elapsedRef.current = null;
+    }
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+      countdownRef.current = null;
+    }
+
+    const currentAlertId = alertIdRef.current;
+    if (currentAlertId && user) {
       await supabase
         .from("sos_alerts")
         .update({
           status: "cancelled",
           resolved_at: new Date().toISOString(),
         })
-        .eq("id", state.alertId);
+        .eq("id", currentAlertId);
     }
+
+    alertIdRef.current = null;
 
     setState({
       active: false,
