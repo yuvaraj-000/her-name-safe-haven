@@ -20,6 +20,7 @@ import CaseTracking from "./pages/CaseTracking";
 import CaseChat from "./pages/CaseChat";
 import Helplines from "./pages/Helplines";
 import Profile from "./pages/Profile";
+import UserChat from "./pages/UserChat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
