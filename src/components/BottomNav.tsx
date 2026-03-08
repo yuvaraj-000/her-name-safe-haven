@@ -1,4 +1,4 @@
-import { Home, Shield, FileText, Users, User } from "lucide-react";
+import { Home, Shield, FileText, Users, Lock, Map, ClipboardList, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -6,7 +6,7 @@ const navItems = [
   { icon: Home, label: "Home", path: "/" },
   { icon: Shield, label: "SOS", path: "/sos" },
   { icon: FileText, label: "Report", path: "/report" },
-  { icon: Users, label: "Contacts", path: "/contacts" },
+  { icon: Lock, label: "Vault", path: "/vault" },
   { icon: User, label: "Profile", path: "/profile" },
 ];
 

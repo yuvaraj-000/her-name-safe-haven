@@ -3,10 +3,16 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
 import SOS from "./pages/SOS";
 import Report from "./pages/Report";
 import Contacts from "./pages/Contacts";
+import EvidenceVault from "./pages/EvidenceVault";
+import SafetyMap from "./pages/SafetyMap";
+import CaseTracking from "./pages/CaseTracking";
 import Helplines from "./pages/Helplines";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -19,15 +25,21 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/sos" element={<SOS />} />
-          <Route path="/report" element={<Report />} />
-          <Route path="/contacts" element={<Contacts />} />
-          <Route path="/helplines" element={<Helplines />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/sos" element={<ProtectedRoute><SOS /></ProtectedRoute>} />
+            <Route path="/report" element={<ProtectedRoute><Report /></ProtectedRoute>} />
+            <Route path="/contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
+            <Route path="/vault" element={<ProtectedRoute><EvidenceVault /></ProtectedRoute>} />
+            <Route path="/safety-map" element={<ProtectedRoute><SafetyMap /></ProtectedRoute>} />
+            <Route path="/cases" element={<ProtectedRoute><CaseTracking /></ProtectedRoute>} />
+            <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
