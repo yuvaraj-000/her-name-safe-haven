@@ -8,7 +8,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { useAuthority } from "@/contexts/AuthorityContext";
 import { supabase } from "@/integrations/supabase/client";
 import AuthorityComplaints from "@/components/authority/AuthorityComplaints";
