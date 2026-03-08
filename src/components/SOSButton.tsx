@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldAlert, X, Mic, MapPin, Radio, Clock } from "lucide-react";
-import { useSOSEmergency } from "@/hooks/useSOSEmergency";
+import { useSOS } from "@/contexts/SOSContext";
 
 const formatTime = (seconds: number) => {
   const m = Math.floor(seconds / 60);
@@ -21,7 +21,7 @@ const SOSButton = () => {
     startCountdown,
     cancelCountdown,
     cancelSOS,
-  } = useSOSEmergency();
+  } = useSOS();
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-sm px-4">

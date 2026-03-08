@@ -54,7 +54,9 @@ const App = () => (
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </AuthorityProvider>
+              </Routes>
+            </AuthorityProvider>
+          </SOSProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
