@@ -98,6 +98,7 @@ export function useSOSEmergency() {
 
       recorder.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
+        setState((s) => ({ ...s, videoStream: null }));
         if (chunksRef.current.length > 0 && user && state.alertId) {
           const blob = new Blob(chunksRef.current, { type: "video/webm" });
           const fileName = `sos-video-${Date.now()}.webm`;
