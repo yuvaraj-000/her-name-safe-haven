@@ -297,8 +297,8 @@ export function useSOSEmergency() {
     // 1. Start live location tracking
     startLocationTracking(alertId);
 
-    // 2. Start audio recording
-    await startAudioRecording();
+    // 2. Start video + audio recording
+    await startVideoRecording();
 
     // 3. Notify emergency contacts immediately
     await notifyContacts(alertId, lat, lng);
