@@ -98,12 +98,16 @@ export type Database = {
           id: string
           incident_date: string | null
           is_anonymous: boolean | null
+          latitude: number | null
           location: string | null
+          longitude: number | null
           status: string
           threat_level: string | null
           title: string
           updated_at: string
           user_id: string
+          verification_result: string | null
+          verification_status: string | null
         }
         Insert: {
           created_at?: string
@@ -111,12 +115,16 @@ export type Database = {
           id?: string
           incident_date?: string | null
           is_anonymous?: boolean | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           status?: string
           threat_level?: string | null
           title: string
           updated_at?: string
           user_id: string
+          verification_result?: string | null
+          verification_status?: string | null
         }
         Update: {
           created_at?: string
@@ -124,12 +132,16 @@ export type Database = {
           id?: string
           incident_date?: string | null
           is_anonymous?: boolean | null
+          latitude?: number | null
           location?: string | null
+          longitude?: number | null
           status?: string
           threat_level?: string | null
           title?: string
           updated_at?: string
           user_id?: string
+          verification_result?: string | null
+          verification_status?: string | null
         }
         Relationships: []
       }

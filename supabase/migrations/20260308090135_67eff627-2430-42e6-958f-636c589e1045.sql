@@ -1,0 +1,6 @@
+
+ALTER TABLE public.incidents 
+ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'pending',
+ADD COLUMN IF NOT EXISTS verification_result TEXT,
+ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
