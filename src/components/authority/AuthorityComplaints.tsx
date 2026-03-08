@@ -229,7 +229,7 @@ const AuthorityComplaints = () => {
 
           <div className="flex items-center gap-2 pt-1 border-t border-border/20 flex-wrap">
             <Badge variant="secondary" className="text-[10px]">{incident.status}</Badge>
-            <span className="text-[10px] text-muted-foreground">ID: {incident.id.slice(0, 8)}</span>
+            <span className="text-[10px] text-primary font-mono font-bold">{incident.case_id || "ID: " + incident.id.slice(0, 8)}</span>
             <div className="flex-1" />
             <Button
               size="sm"

@@ -38,6 +38,35 @@ serve(async (req) => {
       });
     }
 
+    if (action === "send_message") {
+      const { error } = await supabase
+        .from("case_messages")
+        .insert({
+          incident_id: id,
+          sender_type: data.sender_type || "authority",
+          message: data.message,
+        });
+      if (error) throw error;
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (action === "request_identity_reveal") {
+      // Send system message asking victim to reveal identity
+      const { error } = await supabase
+        .from("case_messages")
+        .insert({
+          incident_id: id,
+          sender_type: "system",
+          message: "⚠️ Police are requesting you to voluntarily reveal your identity for legal proceedings. You may choose to reveal or stay anonymous.",
+        });
+      if (error) throw error;
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(JSON.stringify({ error: "Unknown action" }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

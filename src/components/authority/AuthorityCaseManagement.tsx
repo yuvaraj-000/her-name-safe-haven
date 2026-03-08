@@ -104,7 +104,8 @@ const AuthorityCaseManagement = () => {
               <div>
                 <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
                 <p className="text-[10px] text-muted-foreground mt-0.5">
-                  Case #{c.id.slice(0, 8)} • {format(new Date(c.created_at), "MMM d, yyyy")}
+                  <span className="text-primary font-mono font-bold">{c.case_id || "Case #" + c.id.slice(0, 8)}</span> • {format(new Date(c.created_at), "MMM d, yyyy")}
+                  {c.is_anonymous && " • 🛡️ Anonymous"}
                 </p>
               </div>
               <div className="flex gap-1">

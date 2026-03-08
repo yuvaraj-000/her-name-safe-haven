@@ -14,8 +14,9 @@ import AuthoritySOSAlerts from "@/components/authority/AuthoritySOSAlerts";
 import AuthorityEvidence from "@/components/authority/AuthorityEvidence";
 import AuthorityCaseManagement from "@/components/authority/AuthorityCaseManagement";
 import AuthorityMap from "@/components/authority/AuthorityMap";
+import AuthorityCaseChat from "@/components/authority/AuthorityCaseChat";
 
-type DashboardView = "overview" | "sos" | "complaints" | "evidence" | "cases" | "map";
+type DashboardView = "overview" | "sos" | "complaints" | "evidence" | "cases" | "chat" | "map";
 
 const AuthorityDashboard = () => {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ const AuthorityDashboard = () => {
     { id: "complaints" as const, icon: FileText, label: "Complaints", badge: stats.complaints },
     { id: "evidence" as const, icon: FolderOpen, label: "Evidence" },
     { id: "cases" as const, icon: ClipboardList, label: "Cases" },
+    { id: "chat" as const, icon: Bell, label: "Chat" },
     { id: "map" as const, icon: MapPin, label: "Live Map" },
   ];
 
@@ -195,6 +197,7 @@ const AuthorityDashboard = () => {
         {activeView === "complaints" && <AuthorityComplaints />}
         {activeView === "evidence" && <AuthorityEvidence />}
         {activeView === "cases" && <AuthorityCaseManagement />}
+        {activeView === "chat" && <AuthorityCaseChat />}
         {activeView === "map" && <AuthorityMap />}
       </div>
     </div>

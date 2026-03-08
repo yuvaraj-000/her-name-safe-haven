@@ -17,6 +17,7 @@ import Contacts from "./pages/Contacts";
 import EvidenceVault from "./pages/EvidenceVault";
 import SafetyMap from "./pages/SafetyMap";
 import CaseTracking from "./pages/CaseTracking";
+import CaseChat from "./pages/CaseChat";
 import Helplines from "./pages/Helplines";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/vault" element={<ProtectedRoute><EvidenceVault /></ProtectedRoute>} />
               <Route path="/safety-map" element={<ProtectedRoute><SafetyMap /></ProtectedRoute>} />
               <Route path="/cases" element={<ProtectedRoute><CaseTracking /></ProtectedRoute>} />
+              <Route path="/cases/:id/chat" element={<ProtectedRoute><CaseChat /></ProtectedRoute>} />
               <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
