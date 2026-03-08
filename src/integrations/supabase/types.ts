@@ -14,7 +14,218 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      emergency_contacts: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean | null
+          name: string
+          phone: string
+          relationship: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          name: string
+          phone: string
+          relationship?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          name?: string
+          phone?: string
+          relationship?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      evidence: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string
+          hash_sha256: string | null
+          id: string
+          incident_id: string | null
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type: string
+          hash_sha256?: string | null
+          id?: string
+          incident_id?: string | null
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string
+          hash_sha256?: string | null
+          id?: string
+          incident_id?: string | null
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evidence_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incidents: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          incident_date: string | null
+          is_anonymous: boolean | null
+          location: string | null
+          status: string
+          threat_level: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          incident_date?: string | null
+          is_anonymous?: boolean | null
+          location?: string | null
+          status?: string
+          threat_level?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          incident_date?: string | null
+          is_anonymous?: boolean | null
+          location?: string | null
+          status?: string
+          threat_level?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      safety_reports: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          latitude: number
+          longitude: number
+          report_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          latitude: number
+          longitude: number
+          report_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          report_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sos_alerts: {
+        Row: {
+          activated_at: string
+          escalated_to_police: boolean | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          resolved_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string
+          escalated_to_police?: boolean | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          resolved_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string
+          escalated_to_police?: boolean | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          resolved_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
