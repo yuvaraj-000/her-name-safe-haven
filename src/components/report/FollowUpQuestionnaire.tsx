@@ -64,17 +64,22 @@ const FollowUpQuestionnaire = ({ incident, onComplete, onSkip }: FollowUpQuestio
   const handleSubmitAll = async () => {
     setSubmitting(true);
     try {
-      // Store answers as a system message in case_messages for officers to see
       const answeredQs = questions
         .filter(q => answers[q.id]?.trim())
         .map(q => `Q: ${q.question}\nA: ${answers[q.id]}`)
         .join("\n\n");
 
       if (answeredQs) {
-        await supabase.from("case_messages").insert({
-          incident_id: incident.id,
-          sender_type: "system",
-          message: `📋 **AI Follow-Up Investigation Answers**\n\n${answeredQs}`,
+        // Use edge function (service role) to insert system messages
+        await supabase.functions.invoke("authority-update", {
+          body: {
+            action: "send_message",
+            id: incident.id,
+            data: {
+              sender_type: "system",
+              message: `📋 **AI Follow-Up Investigation Answers**\n\n${answeredQs}`,
+            },
+          },
         });
       }
 
