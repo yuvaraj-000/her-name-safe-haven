@@ -31,6 +31,24 @@ const AuthorityDashboard = () => {
       setSosCount((data || []).filter(a => a.status === "active").length);
     };
     fetchSos();
+
+    const channel = supabase
+      .channel("dashboard-sos-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "sos_alerts" },
+        () => { fetchSos(); }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "incidents" },
+        () => {
+          // Could add a notification badge for new reports too
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const handleLogout = () => {

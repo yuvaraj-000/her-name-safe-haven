@@ -36,6 +36,23 @@ const AuthorityCaseManagement = () => {
       setLoading(false);
     };
     fetchCases();
+
+    const channel = supabase
+      .channel("cases-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "incidents" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setCases(prev => [payload.new as any, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            setCases(prev => prev.map(c => c.id === (payload.new as any).id ? payload.new as any : c));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {

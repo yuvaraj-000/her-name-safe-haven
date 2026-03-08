@@ -31,6 +31,24 @@ const AuthorityComplaints = () => {
       setLoading(false);
     };
     fetchIncidents();
+
+    const channel = supabase
+      .channel("incidents-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "incidents" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setIncidents(prev => [payload.new as any, ...prev]);
+            toast({ title: "📋 New Report!", description: "A new incident report has been submitted." });
+          } else if (payload.eventType === "UPDATE") {
+            setIncidents(prev => prev.map(i => i.id === (payload.new as any).id ? payload.new as any : i));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const callAI = async (incident: any, type: "summarize" | "verify") => {
