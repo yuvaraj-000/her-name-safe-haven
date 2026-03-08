@@ -16,7 +16,7 @@ const menuItems = [
 const Profile = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const name = user?.user_metadata?.full_name || "HerName User";
+  const name = user?.user_metadata?.full_name || "HerNet User";
   const email = user?.email || "";
 
   const handleSignOut = async () => {

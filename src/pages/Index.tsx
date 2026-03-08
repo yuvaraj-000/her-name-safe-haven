@@ -28,7 +28,7 @@ const Index = () => {
             Her<span className="text-gradient-primary">Net</span>
           </h1>
           <p className="mt-2 text-sm text-secondary-foreground/70 max-w-[280px]">
-            Hi {firstName}! Your safety companion is always ready.
+            Hi {firstName}! Your AI-powered safety network is ready.
           </p>
           <button
             onClick={() => navigate("/sos")}

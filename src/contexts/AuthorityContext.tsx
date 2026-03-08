@@ -14,7 +14,7 @@ const AuthorityContext = createContext<AuthorityContextType>({
 
 export const useAuthority = () => useContext(AuthorityContext);
 
-const AUTHORITY_CODE = "HERNAME143";
+const AUTHORITY_CODE = "HERNET143";
 
 export const AuthorityProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthority, setIsAuthority] = useState(() => {

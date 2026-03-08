@@ -105,7 +105,7 @@ const AuthorityLogin = () => {
 
       <div className="px-6 py-6 text-center">
         <p className="text-xs text-muted-foreground/50">
-          HerName Authority System v1.0 • Law Enforcement Use Only
+          HerNet Authority System v1.0 • Law Enforcement Use Only
         </p>
       </div>
     </div>
