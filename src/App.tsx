@@ -53,7 +53,6 @@ const App = () => (
               <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
-            </Routes>
               </Routes>
             </AuthorityProvider>
           </SOSProvider>
