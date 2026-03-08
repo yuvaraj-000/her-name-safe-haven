@@ -1,12 +1,14 @@
-import { Home, Shield, FileText, Users, Lock, Map, ClipboardList, User } from "lucide-react";
+import { Home, Lock, Map, ClipboardList, Phone, MessageCircle, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
-  { icon: Shield, label: "SOS", path: "/sos" },
-  { icon: FileText, label: "Report", path: "/report" },
+  { icon: ClipboardList, label: "Cases", path: "/cases" },
+  { icon: MessageCircle, label: "Chat", path: "/cases" },
   { icon: Lock, label: "Vault", path: "/vault" },
+  { icon: Map, label: "Map", path: "/safety-map" },
+  { icon: Phone, label: "Help", path: "/helplines" },
   { icon: User, label: "Profile", path: "/profile" },
 ];
 
@@ -19,19 +21,16 @@ const BottomNav = () => {
       <div className="mx-auto flex max-w-md items-center justify-around py-2">
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;
-          const isSos = path === "/sos";
           return (
             <button
-              key={path}
+              key={label}
               onClick={() => navigate(path)}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-3 py-1.5 text-xs transition-colors rounded-lg",
-                isActive && !isSos && "text-primary",
-                !isActive && !isSos && "text-muted-foreground hover:text-foreground",
-                isSos && "text-sos font-bold"
+                "flex flex-col items-center gap-0.5 px-2 py-1.5 text-[10px] transition-colors rounded-lg",
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className={cn("h-5 w-5", isSos && "h-6 w-6")} />
+              <Icon className="h-5 w-5" />
               <span>{label}</span>
             </button>
           );

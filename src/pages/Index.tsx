@@ -1,83 +1,72 @@
 import { motion } from "framer-motion";
-import { Shield, FileText, Lock, Map, ClipboardList, Phone, ChevronRight } from "lucide-react";
+import { Shield, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 
-const features = [
-  { icon: Shield, title: "Emergency SOS", desc: "Instant alert with location tracking", path: "/sos", color: "bg-sos/10 text-sos" },
-  { icon: FileText, title: "Report Incident", desc: "Secure & anonymous reporting", path: "/report", color: "bg-primary/10 text-primary" },
-  { icon: Lock, title: "Evidence Vault", desc: "Encrypted file storage", path: "/vault", color: "bg-safe/10 text-safe" },
-  { icon: Map, title: "Safety Map", desc: "Community danger zones", path: "/safety-map", color: "bg-accent/10 text-accent" },
-  { icon: ClipboardList, title: "Case Tracking", desc: "Monitor report progress", path: "/cases", color: "bg-warning/10 text-warning" },
-  { icon: Phone, title: "Helplines", desc: "Quick access to help", path: "/helplines", color: "bg-primary/10 text-primary" },
-];
-
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const firstName = user?.user_metadata?.full_name?.split(" ")[0] || "there";
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-secondary to-secondary/90 px-6 pb-10 pt-14">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 70% 30%, hsl(var(--primary)), transparent 60%)" }} />
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10">
-          <h1 className="font-display text-4xl font-bold text-secondary-foreground">
-            Her<span className="text-gradient-primary">Net</span>
-          </h1>
-          <p className="mt-2 text-sm text-secondary-foreground/70 max-w-[280px]">
-            Hi {firstName}! Your AI-powered safety network is ready.
-          </p>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
+      <div className="px-6 pt-8 pb-2">
+        <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">
+          Her<span className="text-primary">Net</span>
+        </h1>
+        <p className="text-xs text-muted-foreground mt-1">Your safety. Your power.</p>
+      </div>
+
+      {/* SOS Center */}
+      <div className="flex-1 flex items-center justify-center px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, type: "spring" }}
+          className="relative flex flex-col items-center"
+        >
+          {/* Ripple rings */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-52 w-52 rounded-full border border-primary/10 animate-ripple" />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-52 w-52 rounded-full border border-primary/5 animate-ripple" style={{ animationDelay: "0.5s" }} />
+          </div>
+
+          {/* SOS Button */}
           <button
             onClick={() => navigate("/sos")}
-            className="mt-6 flex items-center gap-2 rounded-full bg-sos px-6 py-3 text-sm font-bold text-sos-foreground shadow-sos transition-transform hover:scale-105"
+            className="relative z-10 flex h-44 w-44 flex-col items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sos transition-transform hover:scale-105 active:scale-95 animate-sos-pulse"
           >
-            <Shield className="h-4 w-4" />
-            Quick SOS
+            <Shield className="h-12 w-12 mb-2" />
+            <span className="text-2xl font-display font-bold tracking-wide">SOS</span>
+            <span className="text-[10px] font-medium opacity-80 mt-1">TAP FOR EMERGENCY</span>
           </button>
+
+          <p className="mt-8 text-xs text-muted-foreground text-center max-w-[200px]">
+            Press the button to send an instant emergency alert with your location
+          </p>
         </motion.div>
       </div>
 
-      {/* Features */}
-      <div className="px-6 py-8">
-        <h2 className="font-display text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {features.map((f, i) => (
-            <motion.button
-              key={f.path}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * i, duration: 0.4 }}
-              onClick={() => navigate(f.path)}
-              className="flex flex-col items-start gap-3 rounded-xl bg-card p-4 shadow-card text-left transition-all hover:shadow-soft active:scale-[0.98]"
-            >
-              <div className={`rounded-lg p-2.5 ${f.color}`}>
-                <f.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <span className="text-sm font-semibold text-card-foreground">{f.title}</span>
-                <p className="mt-0.5 text-xs text-muted-foreground">{f.desc}</p>
-              </div>
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* Safety Tips */}
-      <div className="px-6">
-        <h2 className="font-display text-lg font-semibold text-foreground mb-3">Safety Tips</h2>
-        {[
-          "Share your live location with trusted contacts when traveling alone.",
-          "Save emergency numbers on speed dial for quick access.",
-          "Trust your instincts — if something feels wrong, seek help immediately.",
-        ].map((tip, i) => (
-          <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + 0.1 * i }} className="mb-2 flex items-start gap-3 rounded-lg bg-card p-3 shadow-card">
-            <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <p className="text-sm text-card-foreground/80">{tip}</p>
-          </motion.div>
-        ))}
+      {/* Anonymous Report Box */}
+      <div className="px-6 pb-24">
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+          onClick={() => navigate("/report")}
+          className="w-full flex items-center gap-4 rounded-xl border border-border bg-card p-5 text-left transition-all hover:border-primary/30 hover:shadow-soft active:scale-[0.98]"
+        >
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+            <AlertTriangle className="h-6 w-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <span className="text-sm font-display font-semibold text-foreground">Report Anonymous Complaint</span>
+            <p className="text-xs text-muted-foreground mt-0.5">File a secure report to police without revealing your identity</p>
+          </div>
+        </motion.button>
       </div>
 
       <BottomNav />
