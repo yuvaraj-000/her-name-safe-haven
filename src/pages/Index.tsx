@@ -8,6 +8,7 @@ import { useSOS } from "@/contexts/SOSContext";
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { startCountdown } = useSOS();
   const name = user?.user_metadata?.full_name || "User";
 
   return (
