@@ -17,16 +17,33 @@ const AuthorityEvidence = () => {
   const [evidence, setEvidence] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchEvidence = async () => {
+    const { data } = await supabase
+      .from("evidence")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setEvidence(data || []);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const fetchEvidence = async () => {
-      const { data } = await supabase
-        .from("evidence")
-        .select("*")
-        .order("created_at", { ascending: false });
-      setEvidence(data || []);
-      setLoading(false);
-    };
     fetchEvidence();
+
+    // Realtime subscription for new evidence
+    const channel = supabase
+      .channel("authority-evidence-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "evidence" },
+        () => {
+          fetchEvidence();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleDownload = async (filePath: string, fileName: string) => {
