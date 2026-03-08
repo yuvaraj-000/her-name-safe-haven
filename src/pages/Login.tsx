@@ -110,6 +110,17 @@ const Login = () => {
               {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
             </button>
           </div>
+
+          {/* Authority Login */}
+          <div className="mt-6 border-t border-border pt-4">
+            <button
+              onClick={() => navigate("/authority")}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-secondary/30 px-4 py-2.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
+            >
+              <Shield className="h-4 w-4" />
+              Authority / Police Login
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>
