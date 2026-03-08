@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
   Upload, Send, ShieldCheck, MapPin, Camera, FileVideo, Mic,
-  X, AlertTriangle, Loader2, CheckCircle, ShieldX
+  X, AlertTriangle, Loader2, CheckCircle, ShieldX, ArrowLeft
 } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
