@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShieldAlert, MapPin, Clock, User, AlertTriangle } from "lucide-react";
+import { ShieldAlert, MapPin, Clock, User, AlertTriangle, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
 const AuthoritySOSAlerts = () => {
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchAlerts = async () => {
@@ -19,7 +22,36 @@ const AuthoritySOSAlerts = () => {
       setLoading(false);
     };
     fetchAlerts();
+
+    // Realtime subscription for new SOS alerts
+    const channel = supabase
+      .channel("sos-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "sos_alerts" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setAlerts(prev => [payload.new as any, ...prev]);
+            toast({ title: "🚨 New SOS Alert!", description: "A new emergency alert has been activated.", variant: "destructive" });
+          } else if (payload.eventType === "UPDATE") {
+            setAlerts(prev => prev.map(a => a.id === (payload.new as any).id ? payload.new as any : a));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
+
+  const resolveAlert = async (id: string) => {
+    const { error } = await supabase.functions.invoke("authority-update", {
+      body: { action: "resolve_sos", id },
+    });
+    if (!error) {
+      setAlerts(prev => prev.map(a => a.id === id ? { ...a, status: "resolved", resolved_at: new Date().toISOString() } : a));
+      toast({ title: "Alert Resolved", description: "SOS alert has been marked as resolved." });
+    }
+  };
 
   if (loading) {
     return <div className="flex justify-center py-12"><div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
@@ -33,6 +65,9 @@ const AuthoritySOSAlerts = () => {
       <h2 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
         <ShieldAlert className="h-5 w-5 text-sos" />
         SOS Emergency Alerts
+        {activeAlerts.length > 0 && (
+          <Badge variant="destructive" className="animate-pulse ml-2">{activeAlerts.length} ACTIVE</Badge>
+        )}
       </h2>
 
       {activeAlerts.length > 0 && (
@@ -72,6 +107,14 @@ const AuthoritySOSAlerts = () => {
                   Escalated to Police
                 </div>
               )}
+              <Button
+                size="sm"
+                variant="outline"
+                className="mt-3 w-full h-8 text-xs border-safe/30 text-safe hover:bg-safe/10"
+                onClick={() => resolveAlert(alert.id)}
+              >
+                <CheckCircle className="h-3 w-3 mr-1" /> Mark as Resolved
+              </Button>
             </motion.div>
           ))}
         </div>
@@ -79,7 +122,7 @@ const AuthoritySOSAlerts = () => {
 
       {resolvedAlerts.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Resolved Alerts</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Resolved Alerts ({resolvedAlerts.length})</h3>
           {resolvedAlerts.map((alert) => (
             <div key={alert.id} className="rounded-xl border border-border/30 p-4" style={{ background: "hsl(220 25% 12%)" }}>
               <div className="flex items-start justify-between mb-2">
@@ -87,6 +130,9 @@ const AuthoritySOSAlerts = () => {
                 <span className="text-[10px] text-muted-foreground">{format(new Date(alert.activated_at), "MMM d, HH:mm")}</span>
               </div>
               <p className="text-xs text-muted-foreground">User: {alert.user_id.slice(0, 8)}...</p>
+              {alert.resolved_at && (
+                <p className="text-[10px] text-muted-foreground/60 mt-1">Resolved: {format(new Date(alert.resolved_at), "PPpp")}</p>
+              )}
             </div>
           ))}
         </div>

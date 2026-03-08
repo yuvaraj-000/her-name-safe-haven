@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ClipboardList, ArrowDown, CheckCircle, Clock, Search as SearchIcon, AlertTriangle } from "lucide-react";
+import { ClipboardList, ArrowDown, CheckCircle, Clock, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,14 +39,15 @@ const AuthorityCaseManagement = () => {
   }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {
-    const { error } = await supabase
-      .from("incidents")
-      .update({ status: newStatus })
-      .eq("id", id);
+    const { error } = await supabase.functions.invoke("authority-update", {
+      body: { action: "update_case_status", id, data: { status: newStatus } },
+    });
 
     if (!error) {
       setCases(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c));
       toast({ title: "Status Updated", description: `Case moved to: ${statusLabels[newStatus]}` });
+    } else {
+      toast({ title: "Error", description: "Failed to update status", variant: "destructive" });
     }
   };
 
@@ -88,7 +89,6 @@ const AuthorityCaseManagement = () => {
         ))}
       </div>
 
-      {/* Cases */}
       {sorted.map((c, i) => {
         const next = getNextStatus(c.status);
         return (
