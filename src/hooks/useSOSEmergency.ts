@@ -311,20 +311,8 @@ export function useSOSEmergency() {
       cancelSOS();
       return;
     }
-
-    setState((s) => ({ ...s, countdown: 5 }));
-
-    countdownRef.current = setInterval(() => {
-      setState((prev) => {
-        if (prev.countdown === null || prev.countdown <= 1) {
-          if (countdownRef.current) clearInterval(countdownRef.current);
-          countdownRef.current = null;
-          activateSOS();
-          return { ...prev, countdown: null };
-        }
-        return { ...prev, countdown: prev.countdown - 1 };
-      });
-    }, 1000);
+    // Activate immediately — no countdown
+    activateSOS();
   }, [state.active, user]);
 
   const cancelCountdown = useCallback(() => {
