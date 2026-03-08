@@ -43,6 +43,9 @@ export function useSOSEmergency() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const alertIdRef = useRef<string | null>(null);
+  const userRef = useRef(user);
+  userRef.current = user;
 
   // Cleanup on unmount
   useEffect(() => {
