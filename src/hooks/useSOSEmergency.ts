@@ -33,6 +33,7 @@ export function useSOSEmergency() {
     elapsedSeconds: 0,
     latitude: null,
     longitude: null,
+    videoStream: null,
   });
 
   const locationWatchRef = useRef<number | null>(null);
