@@ -1,1 +1,7 @@
 project_id = "wkobhmwrekchkinhkdvk"
+
+[functions.ai-summarize]
+verify_jwt = false
+
+[functions.authority-update]
+verify_jwt = false

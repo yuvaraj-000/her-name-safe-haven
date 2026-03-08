@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FileText, MapPin, Clock, User, UserX, Sparkles, AlertTriangle, CheckCircle } from "lucide-react";
+import { FileText, MapPin, Clock, User, UserX, Sparkles, AlertTriangle, CheckCircle, ShieldCheck, ShieldX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 
 const AuthorityComplaints = () => {
@@ -11,7 +12,10 @@ const AuthorityComplaints = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "anonymous" | "high">("all");
   const [summaries, setSummaries] = useState<Record<string, string>>({});
+  const [verifications, setVerifications] = useState<Record<string, string>>({});
   const [summarizing, setSummarizing] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchIncidents = async () => {
@@ -25,14 +29,25 @@ const AuthorityComplaints = () => {
     fetchIncidents();
   }, []);
 
-  const handleAISummarize = async (incident: any) => {
-    setSummarizing(incident.id);
-    // Simulate AI summarization
-    setTimeout(() => {
-      const summary = `Incident Summary:\n${incident.title} reported${incident.location ? ` near ${incident.location}` : ""}${incident.incident_date ? ` on ${format(new Date(incident.incident_date), "PPp")}` : ""}.\nDescription: ${incident.description.slice(0, 100)}${incident.description.length > 100 ? "..." : ""}\nThreat Level: ${(incident.threat_level || "medium").toUpperCase()}.${incident.is_anonymous ? "\nNote: Anonymous report - verify evidence." : ""}`;
-      setSummaries(prev => ({ ...prev, [incident.id]: summary }));
-      setSummarizing(null);
-    }, 1500);
+  const callAI = async (incident: any, type: "summarize" | "verify") => {
+    const setProcessing = type === "summarize" ? setSummarizing : setVerifying;
+    setProcessing(incident.id);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-summarize", {
+        body: { incident, type },
+      });
+      if (error) throw error;
+      if (type === "summarize") {
+        setSummaries(prev => ({ ...prev, [incident.id]: data.result }));
+      } else {
+        setVerifications(prev => ({ ...prev, [incident.id]: data.result }));
+      }
+    } catch (e: any) {
+      toast({ title: "AI Error", description: e.message || "Failed to process", variant: "destructive" });
+    } finally {
+      setProcessing(null);
+    }
   };
 
   const filtered = incidents.filter(i => {
@@ -68,12 +83,11 @@ const AuthorityComplaints = () => {
         Complaint Management
       </h2>
 
-      {/* Filters */}
       <div className="flex gap-2">
         {[
-          { id: "all" as const, label: "All" },
-          { id: "anonymous" as const, label: "Anonymous" },
-          { id: "high" as const, label: "High Priority" },
+          { id: "all" as const, label: `All (${incidents.length})` },
+          { id: "anonymous" as const, label: `Anonymous (${incidents.filter(i => i.is_anonymous).length})` },
+          { id: "high" as const, label: `High Priority (${incidents.filter(i => i.threat_level === "high").length})` },
         ].map((f) => (
           <button
             key={f.id}
@@ -87,7 +101,6 @@ const AuthorityComplaints = () => {
         ))}
       </div>
 
-      {/* Complaints List */}
       {filtered.map((incident, i) => (
         <motion.div
           key={incident.id}
@@ -135,12 +148,24 @@ const AuthorityComplaints = () => {
               size="sm"
               variant="ghost"
               className="h-7 gap-1 text-[10px] text-primary hover:bg-primary/10"
-              onClick={() => handleAISummarize(incident)}
+              onClick={() => callAI(incident, "summarize")}
               disabled={summarizing === incident.id}
             >
               <Sparkles className="h-3 w-3" />
               {summarizing === incident.id ? "Analyzing..." : "AI Summarize"}
             </Button>
+            {incident.is_anonymous && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 gap-1 text-[10px] text-warning hover:bg-warning/10"
+                onClick={() => callAI(incident, "verify")}
+                disabled={verifying === incident.id}
+              >
+                <ShieldCheck className="h-3 w-3" />
+                {verifying === incident.id ? "Verifying..." : "AI Verify"}
+              </Button>
+            )}
           </div>
 
           {summaries[incident.id] && (
@@ -154,6 +179,20 @@ const AuthorityComplaints = () => {
                 <span className="text-[10px] font-semibold text-primary">AI Summary</span>
               </div>
               <p className="text-xs text-foreground/80 whitespace-pre-line">{summaries[incident.id]}</p>
+            </motion.div>
+          )}
+
+          {verifications[incident.id] && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="rounded-lg border border-warning/20 bg-warning/5 p-3"
+            >
+              <div className="flex items-center gap-1 mb-1">
+                <ShieldCheck className="h-3 w-3 text-warning" />
+                <span className="text-[10px] font-semibold text-warning">AI Verification</span>
+              </div>
+              <p className="text-xs text-foreground/80 whitespace-pre-line">{verifications[incident.id]}</p>
             </motion.div>
           )}
         </motion.div>
