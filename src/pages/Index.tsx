@@ -25,7 +25,7 @@ const Index = () => {
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 70% 30%, hsl(var(--primary)), transparent 60%)" }} />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10">
           <h1 className="font-display text-4xl font-bold text-secondary-foreground">
-            Her<span className="text-gradient-primary">Name</span>
+            Her<span className="text-gradient-primary">Net</span>
           </h1>
           <p className="mt-2 text-sm text-secondary-foreground/70 max-w-[280px]">
             Hi {firstName}! Your safety companion is always ready.
