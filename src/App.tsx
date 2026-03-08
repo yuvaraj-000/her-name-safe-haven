@@ -45,6 +45,7 @@ const App = () => (
               <Route path="/safety-map" element={<ProtectedRoute><SafetyMap /></ProtectedRoute>} />
               <Route path="/cases" element={<ProtectedRoute><CaseTracking /></ProtectedRoute>} />
               <Route path="/cases/:id/chat" element={<ProtectedRoute><CaseChat /></ProtectedRoute>} />
+              <Route path="/chat" element={<ProtectedRoute><UserChat /></ProtectedRoute>} />
               <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
