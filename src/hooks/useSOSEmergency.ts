@@ -200,23 +200,55 @@ export function useSOSEmergency() {
     lat: number | null,
     lng: number | null
   ) => {
+    // Fire both in-app notification and WhatsApp in parallel
     try {
-      const { data } = await supabase.functions.invoke("sos-notify", {
-        body: {
-          user_id: user?.id,
-          alert_id: alertId,
-          latitude: lat,
-          longitude: lng,
-          action: "notify_contacts",
-        },
-      });
+      const [notifyResult, whatsappResult] = await Promise.allSettled([
+        supabase.functions.invoke("sos-notify", {
+          body: {
+            user_id: user?.id,
+            alert_id: alertId,
+            latitude: lat,
+            longitude: lng,
+            action: "notify_contacts",
+          },
+        }),
+        supabase.functions.invoke("sos-whatsapp", {
+          body: {
+            user_id: user?.id,
+            alert_id: alertId,
+            latitude: lat,
+            longitude: lng,
+          },
+        }),
+      ]);
 
-      if (data?.contacts_notified) {
-        setState((s) => ({ ...s, contactsNotified: data.contacts_notified }));
+      let totalNotified = 0;
+      let whatsappSent = 0;
+
+      if (notifyResult.status === "fulfilled" && notifyResult.value.data?.contacts_notified) {
+        totalNotified = notifyResult.value.data.contacts_notified;
+      }
+
+      if (whatsappResult.status === "fulfilled" && whatsappResult.value.data?.sent) {
+        whatsappSent = whatsappResult.value.data.sent;
+      }
+
+      setState((s) => ({ ...s, contactsNotified: Math.max(totalNotified, whatsappSent) }));
+
+      if (whatsappSent > 0) {
+        toast({
+          title: "📱 WhatsApp Alerts Sent",
+          description: `${whatsappSent} emergency contact(s) notified via WhatsApp.`,
+        });
+      } else if (totalNotified > 0) {
         toast({
           title: "Contacts Alerted",
-          description: `${data.contacts_notified} emergency contact(s) notified.`,
+          description: `${totalNotified} emergency contact(s) notified.`,
         });
+      }
+
+      if (whatsappResult.status === "rejected") {
+        console.error("WhatsApp notification failed:", whatsappResult.reason);
       }
     } catch (err) {
       console.error("Contact notification error:", err);
