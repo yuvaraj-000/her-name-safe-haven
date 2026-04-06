@@ -245,6 +245,12 @@ export function useSOSEmergency() {
           title: "Contacts Alerted",
           description: `${totalNotified} emergency contact(s) notified.`,
         });
+      } else if (whatsappResult.status === "fulfilled" && whatsappResult.value.data?.error) {
+        toast({
+          title: "WhatsApp Alert Failed",
+          description: whatsappResult.value.data.error,
+          variant: "destructive",
+        });
       }
 
       if (whatsappResult.status === "rejected") {
@@ -338,11 +344,11 @@ export function useSOSEmergency() {
     // 1. Start live location tracking
     startLocationTracking(alertId);
 
-    // 2. Start video + audio recording
-    await startVideoRecording();
-
-    // 3. Notify emergency contacts immediately
+    // 2. Notify emergency contacts immediately
     await notifyContacts(alertId, lat, lng);
+
+    // 3. Start video + audio recording without blocking alerts
+    void startVideoRecording();
 
     // 4. Schedule police escalation after 2 minutes
     schedulePoliceEscalation(alertId, lat, lng);
