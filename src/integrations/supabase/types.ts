@@ -252,32 +252,67 @@ export type Database = {
         }
         Relationships: []
       }
+      safety_report_upvotes: {
+        Row: {
+          created_at: string
+          id: string
+          report_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          report_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          report_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "safety_report_upvotes_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "safety_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       safety_reports: {
         Row: {
           created_at: string
           description: string | null
+          expires_at: string
           id: string
           latitude: number
           longitude: number
           report_type: string
+          upvotes: number
           user_id: string
         }
         Insert: {
           created_at?: string
           description?: string | null
+          expires_at?: string
           id?: string
           latitude: number
           longitude: number
           report_type: string
+          upvotes?: number
           user_id: string
         }
         Update: {
           created_at?: string
           description?: string | null
+          expires_at?: string
           id?: string
           latitude?: number
           longitude?: number
           report_type?: string
+          upvotes?: number
           user_id?: string
         }
         Relationships: []
