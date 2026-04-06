@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { User, Shield, Bell, Lock, Info, LogOut } from "lucide-react";
+import { User, Shield, Bell, Lock, Info, LogOut, Phone } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import EmergencyContactsManager from "@/components/profile/EmergencyContactsManager";
 
 const menuItems = [
   { icon: User, label: "Personal Information", desc: "Name, email, phone" },
@@ -33,6 +34,21 @@ const Profile = () => {
         <h1 className="mt-4 font-display text-xl font-bold text-foreground neon-text">{name}</h1>
         <p className="text-xs text-muted-foreground mt-1">{email}</p>
       </motion.div>
+
+      <div className="mb-8 rounded-2xl border border-border bg-card/60 p-4 shadow-card">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-card-foreground">Trusted Contacts & SOS</p>
+            <p className="text-xs text-muted-foreground">
+              Add or update the number that should receive your emergency WhatsApp location link.
+            </p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Phone className="h-5 w-5" />
+          </div>
+        </div>
+        <EmergencyContactsManager compact />
+      </div>
 
       <div className="space-y-2.5 mb-8">
         {menuItems.map((item, i) => (

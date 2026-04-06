@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "npm:zod@3.25.76";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,6 +9,30 @@ const corsHeaders = {
 };
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
+
+const bodySchema = z.object({
+  user_id: z.string().uuid(),
+  alert_id: z.string().uuid().optional(),
+  latitude: z.number().nullable().optional(),
+  longitude: z.number().nullable().optional(),
+});
+
+const normalizePhoneNumber = (value: string, defaultCountryCode = "+91") => {
+  const sanitized = value.trim().replace(/^whatsapp:/i, "").replace(/[^\d+]/g, "");
+
+  if (!sanitized) {
+    throw new Error("Invalid phone number format");
+  }
+
+  if (sanitized.startsWith("+")) {
+    return sanitized;
+  }
+
+  return `${defaultCountryCode}${sanitized.replace(/^0+/, "")}`;
+};
+
+const toWhatsAppAddress = (value: string, defaultCountryCode = "+91") =>
+  `whatsapp:${normalizePhoneNumber(value, defaultCountryCode)}`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -24,18 +49,21 @@ serve(async (req) => {
     const WHATSAPP_FROM = Deno.env.get("TWILIO_WHATSAPP_FROM");
     if (!WHATSAPP_FROM) throw new Error("TWILIO_WHATSAPP_FROM is not configured");
 
-    const { user_id, alert_id, latitude, longitude } = await req.json();
+    const parsedBody = bodySchema.safeParse(await req.json());
 
-    if (!user_id) {
+    if (!parsedBody.success) {
       return new Response(
-        JSON.stringify({ error: "user_id is required" }),
+        JSON.stringify({ error: parsedBody.error.flatten().fieldErrors }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    const { user_id, alert_id, latitude, longitude } = parsedBody.data;
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
+    const formattedFrom = toWhatsAppAddress(WHATSAPP_FROM, "+1");
 
     // Fetch user profile
     const { data: profile } = await supabase
@@ -71,12 +99,7 @@ serve(async (req) => {
     const results: Array<{ phone: string; success: boolean; sid?: string; error?: string }> = [];
 
     for (const contact of contacts) {
-      // Format phone for WhatsApp: must be whatsapp:+<number>
-      let phone = contact.phone.replace(/\s+/g, "").replace(/-/g, "");
-      if (!phone.startsWith("+")) {
-        phone = "+91" + phone; // Default to India country code
-      }
-      const toWhatsApp = `whatsapp:${phone}`;
+      const toWhatsApp = toWhatsAppAddress(contact.phone);
 
       try {
         const response = await fetch(`${GATEWAY_URL}/Messages.json`, {
@@ -88,12 +111,13 @@ serve(async (req) => {
           },
           body: new URLSearchParams({
             To: toWhatsApp,
-            From: WHATSAPP_FROM,
+            From: formattedFrom,
             Body: messageBody,
           }),
         });
 
-        const data = await response.json();
+        const rawData = await response.text();
+        const data = rawData ? JSON.parse(rawData) : {};
         if (!response.ok) {
           console.error(`WhatsApp send failed for ${contact.name}:`, JSON.stringify(data));
           results.push({ phone: contact.phone, success: false, error: data.message || `HTTP ${response.status}` });
