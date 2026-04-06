@@ -22,10 +22,24 @@ interface SOSContextType {
 
 const SOSContext = createContext<SOSContextType | null>(null);
 
+const defaultSOS: SOSContextType = {
+  active: false,
+  countdown: null,
+  contactsNotified: 0,
+  escalatedToPolice: false,
+  isRecording: false,
+  elapsedSeconds: 0,
+  latitude: null,
+  longitude: null,
+  videoStream: null,
+  startCountdown: () => {},
+  cancelCountdown: () => {},
+  cancelSOS: () => {},
+};
+
 export const useSOS = () => {
   const ctx = useContext(SOSContext);
-  if (!ctx) throw new Error("useSOS must be used within SOSProvider");
-  return ctx;
+  return ctx ?? defaultSOS;
 };
 
 export const SOSProvider = ({ children }: { children: ReactNode }) => {
