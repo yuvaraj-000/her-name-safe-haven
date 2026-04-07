@@ -32,7 +32,7 @@ export const AuthorityProvider = ({ children }: { children: ReactNode }) => {
 
   const authorityLogout = () => {
     setIsAuthority(false);
-    sessionStorage.removeItem("authority_session");
+    localStorage.removeItem("authority_session");
   };
 
   return (
