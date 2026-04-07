@@ -191,7 +191,7 @@ const SafetyMap = () => {
       {/* Map */}
       <div className="px-4">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-hidden rounded-2xl border border-border/30" style={{ height: 360 }}>
-          <style>{`.leaflet-container { background: hsl(220 25% 10%) !important; }`}</style>
+          <style>{`.leaflet-container { background: hsl(220 25% 10%) !important; position: relative; z-index: 0 !important; }`}</style>
           <MapContainer center={center} zoom={positions.length > 0 ? 13 : 5} style={{ height: "100%", width: "100%" }} zoomControl={false}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
