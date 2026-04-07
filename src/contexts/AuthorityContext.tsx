@@ -18,13 +18,13 @@ const AUTHORITY_CODE = "HERNET143";
 
 export const AuthorityProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthority, setIsAuthority] = useState(() => {
-    return sessionStorage.getItem("authority_session") === "active";
+    return localStorage.getItem("authority_session") === "active";
   });
 
   const authorityLogin = (code: string): boolean => {
     if (code === AUTHORITY_CODE) {
       setIsAuthority(true);
-      sessionStorage.setItem("authority_session", "active");
+      localStorage.setItem("authority_session", "active");
       return true;
     }
     return false;
@@ -32,7 +32,7 @@ export const AuthorityProvider = ({ children }: { children: ReactNode }) => {
 
   const authorityLogout = () => {
     setIsAuthority(false);
-    sessionStorage.removeItem("authority_session");
+    localStorage.removeItem("authority_session");
   };
 
   return (
