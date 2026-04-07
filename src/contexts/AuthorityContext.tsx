@@ -24,7 +24,7 @@ export const AuthorityProvider = ({ children }: { children: ReactNode }) => {
   const authorityLogin = (code: string): boolean => {
     if (code === AUTHORITY_CODE) {
       setIsAuthority(true);
-      sessionStorage.setItem("authority_session", "active");
+      localStorage.setItem("authority_session", "active");
       return true;
     }
     return false;
