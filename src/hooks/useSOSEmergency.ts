@@ -81,77 +81,123 @@ export function useSOSEmergency() {
     }
   };
 
+  const getSupportedMimeType = () => {
+    const types = [
+      "video/webm;codecs=vp9,opus",
+      "video/webm;codecs=vp8,opus",
+      "video/webm;codecs=h264,opus",
+      "video/webm",
+      "video/mp4",
+    ];
+    for (const type of types) {
+      if (MediaRecorder.isTypeSupported(type)) return type;
+    }
+    return "";
+  };
+
+  const saveRecording = async (chunks: Blob[], mimeType: string, source: string) => {
+    const currentUser = userRef.current;
+    if (chunks.length === 0 || !currentUser) return;
+
+    const isVideo = mimeType.startsWith("video");
+    const ext = mimeType.includes("mp4") ? "mp4" : "webm";
+    const blob = new Blob(chunks, { type: mimeType });
+    const fileName = `sos-${isVideo ? "video" : "audio"}-${Date.now()}.${ext}`;
+    const filePath = `${currentUser.id}/${fileName}`;
+
+    try {
+      const { error: uploadError } = await supabase.storage.from("evidence").upload(filePath, blob, {
+        contentType: mimeType,
+        upsert: false,
+      });
+      if (uploadError) {
+        console.error("Evidence upload failed:", uploadError);
+        toast({ title: "Upload Failed", description: "Could not save recording. Will retry.", variant: "destructive" });
+        return;
+      }
+
+      const { error: dbError } = await supabase.from("evidence").insert({
+        user_id: currentUser.id,
+        file_name: fileName,
+        file_path: filePath,
+        file_type: mimeType,
+        file_size: blob.size,
+        source,
+      });
+      if (dbError) console.error("Evidence DB insert failed:", dbError);
+      else toast({ title: "📹 Recording Saved", description: "SOS recording stored in Evidence Vault." });
+    } catch (err) {
+      console.error("Save recording error:", err);
+    }
+  };
+
   const startVideoRecording = async () => {
     try {
-      // Request both camera and microphone
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: true,
       });
-      const recorder = new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
-          ? "video/webm;codecs=vp9,opus"
-          : "video/webm",
-      });
-      chunksRef.current = [];
+
+      const mimeType = getSupportedMimeType();
+      const recorderOptions: MediaRecorderOptions = {};
+      if (mimeType) recorderOptions.mimeType = mimeType;
+
+      const recorder = new MediaRecorder(stream, recorderOptions);
+      const localChunks: Blob[] = [];
 
       recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
+        if (e.data && e.data.size > 0) localChunks.push(e.data);
       };
 
       recorder.onstop = async () => {
+        // Wait a tick to ensure final dataavailable fires
+        await new Promise((r) => setTimeout(r, 100));
         stream.getTracks().forEach((t) => t.stop());
-        setState((s) => ({ ...s, videoStream: null }));
-        const currentUser = userRef.current;
-        const currentAlertId = alertIdRef.current;
-        if (chunksRef.current.length > 0 && currentUser) {
-          const blob = new Blob(chunksRef.current, { type: "video/webm" });
-          const fileName = `sos-video-${Date.now()}.webm`;
-          const filePath = `${currentUser.id}/${fileName}`;
-
-          await supabase.storage.from("evidence").upload(filePath, blob);
-          await supabase.from("evidence").insert({
-            user_id: currentUser.id,
-            file_name: fileName,
-            file_path: filePath,
-            file_type: "video/webm",
-            file_size: blob.size,
-            source: "sos_video_recording",
-          });
-        }
+        setState((s) => ({ ...s, videoStream: null, isRecording: false }));
+        await saveRecording(localChunks, recorder.mimeType || "video/webm", "sos_video_recording");
       };
 
-      recorder.start(1000);
+      recorder.onerror = (e) => {
+        console.error("MediaRecorder error:", e);
+        stream.getTracks().forEach((t) => t.stop());
+        setState((s) => ({ ...s, videoStream: null, isRecording: false }));
+      };
+
+      // Use 2s timeslice for more reliable chunk delivery on mobile
+      recorder.start(2000);
       mediaRecorderRef.current = recorder;
+      chunksRef.current = localChunks as any;
       setState((s) => ({ ...s, isRecording: true, videoStream: stream }));
     } catch (err) {
-      console.warn("Video recording not available, falling back to audio:", err);
-      // Fallback to audio-only
+      console.warn("Video not available, trying audio-only:", err);
       try {
         const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const recorder = new MediaRecorder(audioStream);
-        chunksRef.current = [];
-        recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-        recorder.onstop = async () => {
-          audioStream.getTracks().forEach((t) => t.stop());
-          const currentUser = userRef.current;
-          if (chunksRef.current.length > 0 && currentUser) {
-            const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-            const fileName = `sos-audio-${Date.now()}.webm`;
-            const filePath = `${currentUser.id}/${fileName}`;
-            await supabase.storage.from("evidence").upload(filePath, blob);
-            await supabase.from("evidence").insert({
-              user_id: currentUser.id, file_name: fileName, file_path: filePath,
-              file_type: "audio/webm", file_size: blob.size, source: "sos_recording",
-            });
-          }
+        const localChunks: Blob[] = [];
+
+        recorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) localChunks.push(e.data);
         };
-        recorder.start(1000);
+
+        recorder.onstop = async () => {
+          await new Promise((r) => setTimeout(r, 100));
+          audioStream.getTracks().forEach((t) => t.stop());
+          setState((s) => ({ ...s, isRecording: false }));
+          await saveRecording(localChunks, "audio/webm", "sos_recording");
+        };
+
+        recorder.onerror = (e) => {
+          console.error("Audio recorder error:", e);
+          audioStream.getTracks().forEach((t) => t.stop());
+          setState((s) => ({ ...s, isRecording: false }));
+        };
+
+        recorder.start(2000);
         mediaRecorderRef.current = recorder;
         setState((s) => ({ ...s, isRecording: true }));
       } catch (audioErr) {
         console.warn("Recording not available:", audioErr);
-        toast({ title: "Camera/Mic Permission", description: "Camera and microphone access denied. Recording skipped.", variant: "destructive" });
+        toast({ title: "Camera/Mic Permission", description: "Camera and microphone access denied.", variant: "destructive" });
       }
     }
   };
